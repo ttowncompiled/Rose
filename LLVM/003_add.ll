@@ -67,6 +67,6 @@ define i32 @main() {
 ;       they must be the same type
 ;       they can be literals
 ; add returns the sum of the two values
-; the sum is assigned to @.ret.value.1 --- the first return value we've defined
+; the sum is assigned to @.ret.val.1 --- the first return value we've defined
 
 ; EOF
