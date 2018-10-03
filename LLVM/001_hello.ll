@@ -10,6 +10,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; ModuleID: hello.c
+; ModuleID is used to declare the name of the original source file
 
 @.str.lit.1 = private unnamed_addr constant [14 x i8] c"Hello, World!\00"
 ; literals have to be declared as a Global constant unless they're only used in a single op
@@ -22,6 +23,8 @@
 ;   they are pointers to Heap memory
 ; Global assignment: @ident = <list of attributes, space separated> <type> <value>
 ; @.str.lit.1 is the identifier --- stands for the 1st string literal to be defined
+;   we start the notation with a dot because modern languages don't use dots in named
+;   makes it clear that this is not associated with a variable from the example source file
 ; the attributes are: private unnamed_addr constant
 ; private prevents @.str.lit.1 from being leaked outside of the module
 ;   all such literals should be private, would be bad to have literals leaked
@@ -58,7 +61,8 @@ declare i32 @puts(i8* nocapture) nounwind
 ;   exceptions can still be raised, they will just be handled inside of @puts
 
 define i32 @main() {
-    call i32 @puts(i8* getelementptr ([14 x i8], [14 x i8]* @.str.lit.1, i64 0, i64 0))
+    %.tmp.1 = getelementptr [14 x i8], [14 x i8]* @.str.lit.1, i64 0, i64 0
+    call i32 @puts(i8* %.tmp.1)
     ret i32 0
 }
 ; @main is a function which is defined within this module
@@ -73,11 +77,6 @@ define i32 @main() {
 ;       @main is an exception because it is the entry-point to the program
 ;       @main is used to receive command line arguments
 ; {} is used to encapsulate the body of the function
-; call is a keyword which executes a function
-; the call instruction: call <return-type> <function>(<parameter list>)
-; the return type of @puts is i32 so we use: call i32 @puts(...)
-; @puts takes a single parameter which is a pointer to an array of chars
-; the array of chars that we want is the string literal that we defined globally
 ; Global variables are treated as pointers
 ; to get a pointer declared outside of the body of the function, we must use getelementptr
 ; getelementptr essentially gets a pointer to Heap memory
@@ -92,8 +91,17 @@ define i32 @main() {
 ;       LLVM treats all elements of all arrays as structs
 ;       a single value is essentially just a struct with one thing in it: 0 being the head
 ;       use 0 for non-structs
+; Local variables are always named with %
+;   we store the result at %.tmp.1 --- it's the 1st tmp value we've defined
+; do one instruction at a time --- don't try to combine instructions
+;   combining instructions in one line doesn't always work intuitively or at all
+; call is a keyword which executes a function
+; the call instruction: call <return-type> <function>(<parameter list>)
+; the return type of @puts is i32 so we use: call i32 @puts(...)
+; @puts takes a single parameter which is a pointer to an array of chars
+; the array of chars that we want is the string literal that we defined globally
 ; the call to @puts requires the argument to be typed
-; @puts requires a single argument of type i8* so the getelementptr must be cast to i8*
+; @puts requires a single argument of type i8* so %.tmp.1 must be cast to i8*
 ;   not technically a cast since its [14 x i8]* to i8*
 ;   [14 x i8]* and i8* are just different representations of the same thing
 ; the last statement is the return op for main
