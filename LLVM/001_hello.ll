@@ -59,9 +59,12 @@ declare i32 @puts(i8* nocapture) nounwind
 ; nounwind is an attribute of @puts
 ;   indicates that @puts will not raise an exception
 ;   exceptions can still be raised, they will just be handled inside of @puts
+; NOTE THAT @.str.lit.1 DOES NOT HAVE THE LINE FEED CHARACTER \0A
+;   line feed and carriage return are newline characters
+;   @puts includes a new line character at the end of the string by default
 
 define i32 @main() {
-    %.tmp.1 = getelementptr [14 x i8], [14 x i8]* @.str.lit.1, i64 0, i64 0
+    %.tmp.1 = getelementptr [14 x i8], [14 x i8]* @.str.lit.1, i32 0, i32 0
     call i32 @puts(i8* %.tmp.1)
     ret i32 0
 }
