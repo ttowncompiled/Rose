@@ -41,7 +41,7 @@ define i32 @main() {
 ;   <type> is the type of <id1> and <id2>
 ;       their types must match
 ;   returns the sum of <id1> + <id2>
-;   used for float addition
+;   used to calculate the sum of floats and doubles
 
 declare i32 @printf(i8*, ...)
 

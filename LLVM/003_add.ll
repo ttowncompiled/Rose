@@ -20,11 +20,11 @@ define i32 @main() {
     store i32 4, i32* %a, align 4
     %b = alloca i32, align 4
     store i32 8, i32* %b, align 4
-    %.tmp.1 = load i32, i32* %a, align 4
-    %.tmp.2 = load i32, i32* %b, align 4
-    %.tmp.3 = getelementptr [4 x i8], [4 x i8]* @.str.lit.1, i32 0, i32 0
-    %.tmp.4 = add i32 %.tmp.1, %.tmp.2
-    call i32 (i8*, ...) @printf(i8* %.tmp.3, i32 %.tmp.4)
+    %.tmp.1 = getelementptr [4 x i8], [4 x i8]* @.str.lit.1, i32 0, i32 0
+    %.tmp.2 = load i32, i32* %a, align 4
+    %.tmp.3 = load i32, i32* %b, align 4
+    %.tmp.4 = add i32 %.tmp.2, %.tmp.3
+    call i32 (i8*, ...) @printf(i8* %.tmp.1, i32 %.tmp.4)
     ret i32 0
 }
 ; alloca is used to allocate Stack memory, returns a pointer to Stack memory
@@ -72,6 +72,7 @@ define i32 @main() {
 ;       they must be the same type
 ;       they can be literals
 ;   add returns the sum of the <id1> + <id2>
+;   used to calculate the sum of signed and unsigned integers
 
 declare i32 @printf(i8*, ...)
 

@@ -31,7 +31,7 @@ define i32 @main() {
 ;   <type> is the type of <id1> and <id2>
 ;       their types must match
 ;   returns the difference of <id1> - <id2>
-;   used for float subtraction
+;   used to calculate the difference of floats and doubles
 
 declare i32 @printf(i8*, ...)
 

@@ -31,7 +31,7 @@ define i32 @main() {
 ;   <type> is the type of <id1> and <id2>
 ;       their types must match
 ;   returns the product of <id1> * <id2>
-;   used for float multiplication
+;   used to calculate the product of floats and doubles
 
 declare i32 @printf(i8*, ...)
 
