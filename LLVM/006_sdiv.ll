@@ -5,12 +5,15 @@
 ;   int main() {
 ;       int a = 4;
 ;       int b = 8;
-;       return b / a;
+;       printf("%d\n", b/a);
+;       return 0;
 ;   }
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; ModuleID: sdiv.c
+
+@.str.lit.1 = private unnamed_addr constant [4 x i8] c"%d\0A\00"
 
 define i32 @main() {
     %a = alloca i32, align 4
@@ -19,8 +22,10 @@ define i32 @main() {
     store i32 8, i32* %b, align 4
     %.tmp.1 = load i32, i32* %b, align 4
     %.tmp.2 = load i32, i32* %a, align 4
-    %.ret.val.1 = sdiv i32 %.tmp.1, %.tmp.2
-    ret i32 %.ret.val.1
+    %.tmp.3 = getelementptr [4 x i8], [4 x i8]* @.str.lit.1, i32 0, i32 0
+    %.tmp.4 = sdiv i32 %.tmp.1, %.tmp.2
+    call i32 (i8*, ...) @printf(i8* %.tmp.3, i32 %.tmp.4)
+    ret i32 0
 }
 ; the sdiv instruction: sdiv <type> <id1>, <id2>
 ;   <type> is the type of <id1> and <id2>
@@ -28,5 +33,7 @@ define i32 @main() {
 ;   sdiv returns <id1> / <id2>
 ;   division by 0 is undefined behavior
 ;   sdiv returns a signed int rounded towards 0
+
+declare i32 @printf(i8*, ...)
 
 ; EOF
