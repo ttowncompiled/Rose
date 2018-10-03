@@ -41,28 +41,6 @@
 ; the length of c"Hello, World!\00" is 14 chars, hence [14 x i8] --- 14 chars
 ;   the length of 14 includes the \00 null-terminating character
 
-declare i32 @puts(i8* nocapture) nounwind
-; @puts is an accessible Global function that is provided by LLVM
-; this is its declaration
-; declare indicates that @puts is defined outside of this module
-; i32 indicates that the return type of @puts is a 32-bit integer
-; @puts is the name which is used to call this function
-; (i8* nocapture) is the parameter list
-;   this parameter list includes a single unnamed parameter
-;   parameter doesn't need to be named since we're only declaring the function
-;   parameters are matched from left to right
-; i8* indicates that the first parameter is a pointer to an array of chars
-; nocapture indicates the first parameter will not be copied inside of @puts
-;   nocapture is an attribute of the first parameter
-;   essentially means that the pointer is safe from duplication
-;   doesn't indicate that the pointer is safe from mutation
-; nounwind is an attribute of @puts
-;   indicates that @puts will not raise an exception
-;   exceptions can still be raised, they will just be handled inside of @puts
-; NOTE THAT @.str.lit.1 DOES NOT HAVE THE LINE FEED CHARACTER \0A
-;   line feed and carriage return are newline characters
-;   @puts includes a new line character at the end of the string by default
-
 define i32 @main() {
     %.tmp.1 = getelementptr [14 x i8], [14 x i8]* @.str.lit.1, i32 0, i32 0
     call i32 @puts(i8* %.tmp.1)
@@ -117,5 +95,31 @@ define i32 @main() {
 ;   by C convention, 0 means that the program executed successfuly
 ;       this convention is used to allow any number of error codes
 ;       we return 0 from main to follow this convention
+
+declare i32 @puts(i8* nocapture) nounwind
+; @puts is an accessible Global function that is provided by LLVM
+; this is its declaration
+; declare indicates that @puts is defined outside of this module
+; i32 indicates that the return type of @puts is a 32-bit integer
+; @puts is the name which is used to call this function
+; (i8* nocapture) is the parameter list
+;   this parameter list includes a single unnamed parameter
+;   parameter doesn't need to be named since we're only declaring the function
+;   parameters are matched from left to right
+; i8* indicates that the first parameter is a pointer to an array of chars
+; nocapture indicates the first parameter will not be copied inside of @puts
+;   nocapture is an attribute of the first parameter
+;   essentially means that the pointer is safe from duplication
+;   doesn't indicate that the pointer is safe from mutation
+; nounwind is an attribute of @puts
+;   indicates that @puts will not raise an exception
+;   exceptions can still be raised, they will just be handled inside of @puts
+; NOTE THAT @.str.lit.1 DOES NOT HAVE THE LINE FEED CHARACTER \0A
+;   line feed and carriage return are newline characters
+;   @puts includes a new line character at the end of the string by default
+; this is called a forward declaration
+;   when emitting code, we often need to emit declarations at the end
+;   that way we can emit statement by statement
+;   the alternative would be to store all of this emits in case there is a future declaration
 
 ; EOF

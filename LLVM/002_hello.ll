@@ -13,15 +13,6 @@
 
 @.str.lit.1 = private unnamed_addr constant [15 x i8] c"Hello, World!\0A\00"
 
-declare i32 @printf(i8*, ...)
-; @printf is an acessible Global function that is provided by LLVM
-;   it is a var args function which takes:
-;       a single unnamed parameter which is of type: i8* --- an array of chars
-;       followed by any number (even 0) of args of any type
-;   @printf returns an i32
-; NOTE THE LINE FEED \0A CHARACTER
-;   unlike @puts, @printf doesn't include a newline character by default
-
 define i32 @main() {
     %.tmp.1 = getelementptr [15 x i8], [15 x i8]* @.str.lit.1, i32 0, i32 0
     call i32 (i8*, ...) @printf(i8* %.tmp.1)
@@ -33,5 +24,14 @@ define i32 @main() {
 ;       i32 since @printf returns an i32
 ;   followed by the full parameter declaration of the function
 ;       (i8*, ...) since this is the full parameter declaration of @printf
+
+declare i32 @printf(i8*, ...)
+; @printf is an acessible Global function that is provided by LLVM
+;   it is a var args function which takes:
+;       a single unnamed parameter which is of type: i8* --- an array of chars
+;       followed by any number (even 0) of args of any type
+;   @printf returns an i32
+; NOTE THE LINE FEED \0A CHARACTER
+;   unlike @puts, @printf doesn't include a newline character by default
 
 ; EOF
