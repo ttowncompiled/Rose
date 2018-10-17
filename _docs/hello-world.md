@@ -6,7 +6,7 @@ permalink: /docs/hello-world/
 The classic "Hello, World!" program can be written in a single line.
 
 {% highlight ruby %}
-    @puts "Hello, World!"   #=> Hello, World!
+    @puts "Hello, World!".  #=> Hello, World!
 {% endhighlight %}
 
 Rose, like Ruby and Julia, can be used as a scripting language. No main method is necessary as the program itself is treated as the main routine.
