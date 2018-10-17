@@ -2,6 +2,7 @@
   docs:
   - overview
   - punctuation
+  - ident-names
   - hello-world
 
 - title: Literals
