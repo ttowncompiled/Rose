@@ -1,0 +1,13 @@
+---
+layout: post
+title:  "Comments"
+date:   2018-10-16 19:39:10 -0500
+categories: jekyll update
+---
+Rose only supports single-line/in-line comments with the `#` symbol.
+
+{% highlight ruby %}
+    # this is a single-line comment
+    let x := 1 + 2  # this is an in-line comment
+{% endhighlight %}
+
