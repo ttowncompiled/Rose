@@ -1,9 +1,8 @@
 ---
-layout: post
-title:  "Literals"
-date:   2018-10-16 20:17:30 -0500
-categories: jekyll update
+title: Literals
+permalink: /docs/literals/
 ---
+
 Rose supports many literal types.
 
 | Literal   | Sample values                                         |

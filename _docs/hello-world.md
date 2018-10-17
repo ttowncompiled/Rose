@@ -1,9 +1,8 @@
 ---
-layout: post
-title:  "Hello, World!"
-date:   2018-10-16 19:30:00 -0500
-categories: jekyll update
+title: Hello, World!
+permalink: /docs/hello-world/
 ---
+
 The classic "Hello, World!" program can be written in a single line.
 
 {% highlight ruby %}

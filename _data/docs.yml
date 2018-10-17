@@ -1,9 +1,13 @@
-- title: Getting Started
+- title: Overview
   docs:
   - overview
+  - hello-world
 
-- title: Examples
+- title: Literals
   docs:
-  - cheatsheet
-  - font-awesome
-  - bootstrap
+  - literals
+
+- title: Syntax
+  docs:
+  - comments
+

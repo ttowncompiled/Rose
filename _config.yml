@@ -6,10 +6,10 @@ description: >
   providing documentation and blog post pages.
 lang: en-US
 
-baseurl: "/jekyll-doc-theme" # the subpath of your site, e.g. /blog/
-url: https://aksakalli.github.io/jekyll-doc-theme # the base hostname & protocol for your site
-git_address: https://github.com/aksakalli/jekyll-doc-theme
-git_edit_address: https://github.com/aksakalli/jekyll-doc-theme/blob/gh-pages
+baseurl: "/lang" # the subpath of your site, e.g. /blog/
+url: https://ttowncompiled.github.io/Rose # the base hostname & protocol for your site
+git_address: https://github.com/ttowncompiled/Rose
+git_edit_address: https://github.com/ttowncompiled/Rose/blob/gh-pages
 
 # theme options from https://bootswatch.com/
 # comment out this to use default Bootstrap
@@ -30,7 +30,7 @@ exclude:
   - .idea/
   - .gitignore
   - README.md
-timezone: Europe/Berlin
+timezone: US/Chicago
 defaults:
 - scope:
     path: _posts

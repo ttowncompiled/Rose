@@ -1,9 +1,8 @@
 ---
-layout: post
-title:  "Comments"
-date:   2018-10-16 19:39:10 -0500
-categories: jekyll update
+title: Comments
+permalink: /docs/comments/
 ---
+
 Rose only supports single-line/in-line comments with the `#` symbol.
 
 {% highlight ruby %}
