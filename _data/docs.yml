@@ -7,7 +7,20 @@
   docs:
   - literals
 
-- title: Syntax
+- title: Comments
   docs:
-  - comments
+  - single-comments
+  - multi-comments
+
+- title: Variables
+  docs:
+  - assignment
+  - multi-assignment
+  - self-assignment
+
+- title: Blocks
+  docs:
+  - basic-blocks
+  - named-blocks
+  - var-blocks
 
