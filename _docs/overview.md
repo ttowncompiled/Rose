@@ -1,0 +1,26 @@
+---
+title:  Overview
+permalink: /docs/overview/
+---
+
+Hello and welcome to the Rose programming language! This language is still in very, very early development. The following documentation serves as a template for features, semantics, and syntax that Rose will support. Rose is inspired by such languages as Julia, Ruby, and Rust, so programmers familiar with such languages should find the following documentation relatively straightforward.
+
+The second purpose of the following documentation is to open Rose to criticism in hopes that unpopular features will be caught early before they become too deeply rooted in the language.
+
+Feel free to jump around the documentation. Posts are not intended to be an iterative approach to learning the language. They are intended to be an exhaustive description of everything that Rose hopes to offer.
+
+In code examples, comments will be used regularly to provide further detail on the language. The symbol `#=>` will be used to annotate expected output.
+
+{% highlight ruby %}
+    let x := 1 + 2
+    x   #=> 3
+{% endhighlight %}
+
+And comments with the `:` symbol are used to detail the type of a variable.
+
+{% highlight ruby %}
+    # x : Int32
+{% endhighlight %}
+
+Enjoy!
+
