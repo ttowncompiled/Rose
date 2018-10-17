@@ -31,4 +31,5 @@
   docs:
   - cond-branching
   - var-cond-branching
+  - while-loop
 
