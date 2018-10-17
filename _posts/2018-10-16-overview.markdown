@@ -13,7 +13,7 @@ Feel free to jump around the documentation. Posts are not intended to be an iter
 In code examples, comments will be used regularly to provide further detail on the language. The symbol `#=>` will be used to annotate expected output.
 
 {% highlight ruby %}
-    x = 1 + 2
+    let x := 1 + 2
     x   #=> 3
 {% endhighlight %}
 
