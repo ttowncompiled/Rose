@@ -14,5 +14,5 @@ Rose, like Ruby and Julia, can be used as a scripting language. No main method i
 
 The symbol `@` followed by an identifier is a macro. Rose is a compiled language that supports macros. Some macros are provided by the std library and some are user defined. Others, like `@puts` are actually keyed into the compiler to emit a specific intermediate representation (IR).
 
-`"Hello, World!"` is a string literal. String literals can be declared with `''`, `""`, or ``` `` ```.
+`"Hello, World!"` is a string literal. String literals can be declared with `""` or ``` `` ```.
 
