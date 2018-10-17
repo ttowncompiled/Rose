@@ -27,6 +27,12 @@ Blocks are expressive. The value of a block is the value of the last expression 
     c #=> 3
 {% endhighlight %}
 
+Blocks can be in-lined.
+
+{% highlight julia %}
+    let c := begin let a, b := 1, 2 ; a + b end
+{% endhighlight %}
+
 Blocks can be broken out of with the `break` keyword.
 
 {% highlight julia %}
