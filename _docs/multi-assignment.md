@@ -12,12 +12,12 @@ The `:=` operator can be used to assign the same value to multiple variables.
     x + y + z   #=> 3
 {% endhighlight %}
 
-The `:=` operator can also _splat_ the right-hand-side and assign different values to a `,` separated list of variables.
+The `:=` operator can also _splat_ the right-hand-side and assign different values to a space or comma separated collection of variables.
 
 {% highlight ruby %}
     let x, y, z := ( 1, 2, 3 )
     x + y + z   #=> 6
-    let x, y, z := 4, 5, 6  # comma separated values can also be splatted
+    let x, y, z := 4, 5, 6  # space or comma separated values can also be splatted
     x + y + z   #=> 15
 {% endhighlight %}
 
