@@ -17,5 +17,11 @@ In code examples, comments will be used regularly to provide further detail on t
     x   #=> 3
 {% endhighlight %}
 
+And comments with the `:` symbol are used to detail the type of a variable.
+
+{% highlight ruby %}
+    # x : Int32
+{% endhighlight %}
+
 Enjoy!
 
