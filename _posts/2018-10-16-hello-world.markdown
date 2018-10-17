@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Hello, World!"
-date:   2018-10-16 19:01:20 -0500
+date:   2018-10-16 19:30:00 -0500
 categories: jekyll update
 ---
 The classic "Hello, World!" program can be written in a single line.
