@@ -4,6 +4,7 @@
   - punctuation
   - ident-names
   - hello-world
+  - linked-list
 
 - title: Literals
   docs:
