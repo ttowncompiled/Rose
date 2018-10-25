@@ -18,8 +18,7 @@ pub static EOF:         TokenType       = "EOF";        // end-of-file
 
 // Identifiers + Literals
 pub static IDENT:       TokenType       = "IDENT";      // add, foobar, x, y, ...
-pub static INT_LIT:     TokenType       = "INT_LIT";    // 1343456
-pub static INT:         TokenType       = "Int";
+pub static INT:         TokenType       = "INT";        // 1343456
 pub static LET:         TokenType       = "let";
 pub static DO:          TokenType       = "do";
 pub static END:         TokenType       = "end";
@@ -42,7 +41,6 @@ pub static RPAREN:      TokenType       = ")";
 
 pub fn lookup_ident(ident: &String) -> TokenType {
     match ident.as_str() {
-        "Int"       => INT,
         "let"       => LET,
         "do"        => DO,
         "end"       => END,
@@ -57,7 +55,6 @@ mod tests {
 
     #[test]
     fn test_lookup_ident() {
-        assert_eq!(lookup_ident(&String::from("Int")), INT);
         assert_eq!(lookup_ident(&String::from("let")), LET);
         assert_eq!(lookup_ident(&String::from("do")), DO);
         assert_eq!(lookup_ident(&String::from("end")), END);

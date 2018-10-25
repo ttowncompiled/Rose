@@ -33,11 +33,14 @@ impl<'a> Lexer<'a> {
         self.read_position += 1;
     }
 
-    pub fn peek_char(&mut self) -> Option<&char> {
+    pub fn peek_char(&mut self) -> Option<char> {
         if self.read_position >= self.input.len() as i32 {
             return None;
         } else {
-            return self.chars.peek();
+            return match self.chars.peek() {
+                Some(&ch) => Some(ch),
+                None => None,
+            };
         }
     }
 
@@ -72,7 +75,7 @@ impl<'a> Lexer<'a> {
                     return tok;
                 } else if is_digit(self.ch) {
                     let ident: String = self.read_number();
-                    let ttype: token::TokenType = token::INT_LIT;
+                    let ttype: token::TokenType = token::INT;
                     tok = Some(token::Token{ ttype: ttype, literal: ident });
                     return tok;
                 } else {
@@ -162,39 +165,39 @@ let result: Int = add(five, ten);
             token::Token{ ttype:    token::LET,         literal:    String::from("let")         },
             token::Token{ ttype:    token::IDENT,       literal:    String::from("five")        },
             token::Token{ ttype:    token::COLON,       literal:    String::from(":")           },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::ASSIGN,      literal:    String::from("=")           },
-            token::Token{ ttype:    token::INT_LIT,     literal:    String::from("5")           },
+            token::Token{ ttype:    token::INT,         literal:    String::from("5")           },
             token::Token{ ttype:    token::SEMICOLON,   literal:    String::from(";")           },
             token::Token{ ttype:    token::LET,         literal:    String::from("let")         },
             token::Token{ ttype:    token::IDENT,       literal:    String::from("ten")         },
             token::Token{ ttype:    token::COLON,       literal:    String::from(":")           },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::ASSIGN,      literal:    String::from("=")           },
-            token::Token{ ttype:    token::INT_LIT,     literal:    String::from("10")          },
+            token::Token{ ttype:    token::INT,         literal:    String::from("10")          },
             token::Token{ ttype:    token::SEMICOLON,   literal:    String::from(";")           },
             token::Token{ ttype:    token::LET,         literal:    String::from("let")         },
             token::Token{ ttype:    token::IDENT,       literal:    String::from("add")         },
             token::Token{ ttype:    token::COLON,       literal:    String::from(":")           },
             token::Token{ ttype:    token::LPAREN,      literal:    String::from("(")           },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::COMMA,       literal:    String::from(",")           },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::RPAREN,      literal:    String::from(")")           },
             token::Token{ ttype:    token::MORPH,       literal:    String::from("->")          },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::ASSIGN,      literal:    String::from("=")           },
             token::Token{ ttype:    token::LPAREN,      literal:    String::from("(")           },
             token::Token{ ttype:    token::IDENT,       literal:    String::from("x")           },
             token::Token{ ttype:    token::COLON,       literal:    String::from(":")           },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::COMMA,       literal:    String::from(",")           },
             token::Token{ ttype:    token::IDENT,       literal:    String::from("y")           },
             token::Token{ ttype:    token::COLON,       literal:    String::from(":")           },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::RPAREN,      literal:    String::from(")")           },
             token::Token{ ttype:    token::MORPH,       literal:    String::from("->")          },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::DO,          literal:    String::from("do")          },
             token::Token{ ttype:    token::RETURN,      literal:    String::from("return")      },
             token::Token{ ttype:    token::IDENT,       literal:    String::from("x")           },
@@ -206,7 +209,7 @@ let result: Int = add(five, ten);
             token::Token{ ttype:    token::LET,         literal:    String::from("let")         },
             token::Token{ ttype:    token::IDENT,       literal:    String::from("result")      },
             token::Token{ ttype:    token::COLON,       literal:    String::from(":")           },
-            token::Token{ ttype:    token::INT,         literal:    String::from("Int")         },
+            token::Token{ ttype:    token::IDENT,       literal:    String::from("Int")         },
             token::Token{ ttype:    token::ASSIGN,      literal:    String::from("=")           },
             token::Token{ ttype:    token::IDENT,       literal:    String::from("add")         },
             token::Token{ ttype:    token::LPAREN,      literal:    String::from("(")           },
