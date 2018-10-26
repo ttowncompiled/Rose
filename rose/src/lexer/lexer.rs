@@ -102,6 +102,18 @@ impl<'a> Lexer<'a> {
             }
             self.read_char();
         }
+        while is_letter(self.ch) || is_digit(self.ch) {
+            match self.ch {
+                Some(ch) => buffer.push(ch),
+                None => return buffer,
+            }
+        }
+        while is_special_char(self.ch) {
+            match self.ch {
+                Some(ch) => buffer.push(ch),
+                None => return buffer,
+            }
+        }
         return buffer;
     }
 
@@ -134,6 +146,13 @@ pub fn is_letter(ch: Option<char>) -> bool {
 pub fn is_digit(ch: Option<char>) -> bool {
     match ch {
         Some(ord) => return '0' <= ord && ord <= '9',
+        None => return false,
+    }
+}
+
+pub fn is_special_char(ch: Option<char>) -> bool {
+    match ch {
+        Some(ord) => return ord == '!' || ord == '?',
         None => return false,
     }
 }
