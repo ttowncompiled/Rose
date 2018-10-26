@@ -55,3 +55,5 @@ collections:
   posts:
     permalink: /blog/:year/:month/:day/:title/
     output: true
+
+theme: jekyll-theme-cayman
