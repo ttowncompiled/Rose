@@ -115,7 +115,7 @@
 | OP\_BCAST\_MUL    | .\*           | Matrix multiplication                             |
 | OP\_BCAST\_DIV    | ./            | Matrix division                                   |
 | OP\_BORROW        | &             | Borrow by stack-to-stack reference                |
-| OP\_LIFETIME      | '             | Annotates borrow with lifetime                    |
+| OP\_LIFETIME      | \`            | Annotates borrow with lifetime                    |
 | OP\_RANGE\_INC    | ..            | Infix operator for inclusive range                |
 | OP\_SPLAT         | ...           | Infix operator for exclusive range, prefix splat  |
 
@@ -138,16 +138,19 @@
 | LIT\_IDENT        | foo           | A variable, routine, or type identifier           |
 | LIT\_INT          | 5             | A signed, i32 integer literal                     |
 | LIT\_FLOAT        | 5.0           | A signed, f64 float literal                       |
+| LIT\_INF          | Inf           | A literal for Infinity                            |
+| LIT\_NAN          | NaN           | A literal for not-a-number                        |
+| LIT\_NIL          | nil           | A literal for the nil type                        |
 | LIT\_BOOL         | true          | A Boolean literal                                 |
 | LIT\_CHAR         | 'a'           | A character literal (i32 for UTF-8 encoding)      |
-| LIT\_STRING       | "foo", `foo`  | A stack allocated string literal                  |
+| LIT\_STRING       | "foo"         | A stack allocated string literal                  |
 | LIT\_SYMBOL       | :foo          | A symbol literal                                  |
 
 # Meta-tokens
 | Lexer             | Literal       | Description                                       |
 |-------------------|---------------|---------------------------------------------------|
-| META\_MACRO       | @puts         | A compiler/interpreter defined literal            |
-| META\_PRE\_MACRO  | #[derive(Eq)] | A pre-processor defined literal                   |
+| META\_MACRO       | @puts         | A compiler/interpreter defined macro              |
+| META\_PRE\_MACRO  | #[derive(Eq)] | A pre-processor defined macro                     |
 | META\_COMMENT     | # comment     | A single-line comment, removed by pre-processor   |
 | META\_DOC\_STRING | """doc"""     | A multi-line documentation string                 |
 | META\_EOF         |               | Token to represent end of file                    |
