@@ -4,7 +4,7 @@
 | Lexer         | Keyword       | Description                                       |
 |---------------|---------------|---------------------------------------------------|
 | KW\_ABSTRACT  | abstract      | Declares an abstract type or routine definition   |
-| KW\_AND       | and           | Logical and                                       |
+| KW\_AND       | and           | Logical and, infix operator                       |
 | KW\_AS        | as            | Casts left type to right type, aliases imports    |
 | KW\_BEGIN     | begin         | Declares a basic block                            |
 | KW\_BORROW    | borrow        | Allocates a stack-to-stack pointer                |
@@ -28,7 +28,7 @@
 | KW\_IMPL      | impl          | Declares an impl relationship                     |
 | KW\_IN        | in            | Binds left var to right collection, membership    |
 | KW\_INF       | Inf           | Infinity                                          |
-| KW\_IS        | is            | Strict equality check                             |
+| KW\_IS        | is            | Strict equality check, infix operator             |
 | KW\_LET       | let           | Declares a variable binding                       |
 | KW\_LOOP      | loop          | Basic loop block, classic for-loop                |
 | KW\_MACRO     | macro         | Declares a custom macro                           |
@@ -40,7 +40,7 @@
 | KW\_NEW       | new           | Allocates heap memory and a stack-to-heap pointer |
 | KW\_NIL       | nil           | The nil or null type                              |
 | KW\_NOT       | not           | Logical not, prefix unary operator                |
-| KW\_OR        | or            | Logical or                                        |
+| KW\_OR        | or            | Logical or, infix operator                        |
 | KW\_OVERLOAD  | overload      | Declares a routine overload for the dispatcher    |
 | KW\_OVERRIDE  | override      | Declares a routine override for the dispatcher    |
 | KW\_PRO       | pro           | Protected type or binding                         |
@@ -64,6 +64,45 @@
 | KW\_WHERE     | where         | Declare guard(s)                                  |
 | KW\_WHILE     | while         | While loop                                        |
 | KW\_WITH      | with          | Declares bindings for block                       |
-| KW\_XOR       | xor           | Logical xor                                       |
+| KW\_XOR       | xor           | Logical xor, infix operator                       |
 | KW\_YIELD     | yield         | Return call for generators                        |
+
+# Operators
+| Lexer             | Operator      | Description                                       |
+|-------------------|---------------|---------------------------------------------------|
+| OP\_ADD           | +             | Infix arithmetic addition, unary +                |
+| OP\_SUB           | -             | Infix arithmetic subtraction, unary -             |
+| OP\_MUL           | \*            | Infix arithmetic multiplication, unary deref      |
+| OP\_DIV           | /             | Infix operator for arithmetic division            |
+| OP\_MOD           | %             | Infix operator for arithmetic modulation          |
+| OP\_POW           | \*\*          | Infix operator for arithmetic exponentiation      |
+| OP\_RDIV          | //            | Infix operator for arithmetic ration division     |
+| OP\_CMP           | <=>           | Infix comparator, returns -1, 0, 1                |
+| OP\_NOT           | !             | Prefix not, boolean                               |
+| OP\_EQ            | ==            | Infix equality check, boolean                     |
+| OP\_NEQ           | !=            | Infix not-equality check, boolean                 |
+| OP\_GT            | >             | Infix greater-than, boolean                       |
+| OP\_GTE           | >=            | Infix greater-than-equal-to, boolean              |
+| OP\_LT            | <             | Infix less-than, boolean                          |
+| OP\_LTE           | <=            | Infix less-then-equal-to, boolean                 |
+| OP\_LSHIFT        | <<            | Bitwise left-logical-shift                        |
+| OP\_RSHIFT        | >>            | Bitwise right-logical-shift                       |
+| OP\_AND           | &&            | Bitwise logical-and                               |
+| OP\_OR            | \|\|          | Bitwise logical-or                                |
+| OP\_XOR           | ^             | Bitwise logical-xor                               |
+| OP\_LNOT          | ~             | Bitwise logical-not                               |
+| OP\_ASSIGN        | =             | Assignment operator                               |
+| OP\_INF\_ASSIGN   | :=            | Assign and infer type from right type             |
+| OP\_ADD\_ASSIGN   | +=            | Adds left to right and assigns to left            |
+| OP\_SUB\_ASSIGN   | -=            | Subs right from left and assigns to left          |
+| OP\_MUL\_ASSIGN   | \*=           | Muls right and left and assigns to left           |
+| OP\_DIV\_ASSIGN   | /=            | Divides left by right and assigns to left         |
+| OP\_MOD\_ASSIGN   | %=            | Mods left by right and assigns to left            |
+| OP\_POW\_ASSIGN   | \*\*=         | Computes pow(left, right) and assigns to left     |
+| OP\_RDIV\_ASSIGN  | //=           | Rational divides left by right and assigns to left|
+| OP\_LSHIFT\_ASSIGN| <<=           | Left-logically-shifts left and assigns to left    |
+| OP\_RSHIFT\_ASSIGN| >>=           | Right-logically-shifts left and assigns to left   |
+| OP\_AND\_ASSIGN   | &&=           | Logical and of left and right and assigns to left |
+| OP\_OR\_ASSIGN    | \|\|=         | Logical or of left and right and assigns to left  |
+| OP\_XOR\_ASSIGN   | ^=            | Logical xor of left and right and assigns to left |
 
