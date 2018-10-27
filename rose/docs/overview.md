@@ -105,4 +105,51 @@
 | OP\_AND\_ASSIGN   | &&=           | Logical and of left and right and assigns to left |
 | OP\_OR\_ASSIGN    | \|\|=         | Logical or of left and right and assigns to left  |
 | OP\_XOR\_ASSIGN   | ^=            | Logical xor of left and right and assigns to left |
+| OP\_CURRY         | .             | Left-right function composition, membership       |
+| OP\_COMP          | \|            | Right-left function composition                   |
+| OP\_MORPH         | ->            | Declares resulting type of routine                |
+| OP\_MAP           | =>            | Maps left to right, infer right return type       |
+| OP\_DISPATCH      | ::            | Dispatch resolution                               |
+| OP\_BCAST\_ADD    | .+            | Matrix addition                                   |
+| OP\_BCAST\_SUB    | .-            | Matrix subtraction                                |
+| OP\_BCAST\_MUL    | .\*           | Matrix multiplication                             |
+| OP\_BCAST\_DIV    | ./            | Matrix division                                   |
+| OP\_BORROW        | &             | Borrow by stack-to-stack reference                |
+| OP\_LIFETIME      | '             | Annotates borrow with lifetime                    |
+| OP\_RANGE\_INC    | ..            | Infix operator for inclusive range                |
+| OP\_SPLAT         | ...           | Infix operator for exclusive range, prefix splat  |
+
+# Delimiters
+| Lexer             | Delimiter     | Description                                       |
+|-------------------|---------------|---------------------------------------------------|
+| DEL\_END          | '\n', '\r', ; | Marks the end of a statement or expression        |
+| DEL\_COMMA        | ,             | Comma separator for params, variables, etc.       |
+| DEL\_COLON        | :             | Separates binding val from binding type           |
+| DEL\_LPAREN       | (             | Open paren for precedence, params, args, tuples   |
+| DEL\_RPAREN       | )             | Closing paren for precedence, params, args, tuples|
+| DEL\_LBRACKET     | [             | Open bracket for precedence, basic collections    |
+| DEL\_RBRACKET     | ]             | Closing bracket for precedence, basic collections |
+| DEL\_LBRACE       | {             | Open brace for contexts, scopes, and structs       |
+| DEL\_RBRACE       | }             | Closing brace for contexts, scopes, and structs   |
+
+# Literals
+| Lexer             | Literal       | Description                                       |
+|-------------------|---------------|---------------------------------------------------|
+| LIT\_IDENT        | foo           | A variable, routine, or type identifier           |
+| LIT\_INT          | 5             | A signed, i32 integer literal                     |
+| LIT\_FLOAT        | 5.0           | A signed, f64 float literal                       |
+| LIT\_BOOL         | true          | A Boolean literal                                 |
+| LIT\_CHAR         | 'a'           | A character literal (i32 for UTF-8 encoding)      |
+| LIT\_STRING       | "foo", `foo`  | A stack allocated string literal                  |
+| LIT\_SYMBOL       | :foo          | A symbol literal                                  |
+
+# Meta-tokens
+| Lexer             | Literal       | Description                                       |
+|-------------------|---------------|---------------------------------------------------|
+| META\_MACRO       | @puts         | A compiler/interpreter defined literal            |
+| META\_PRE\_MACRO  | #[derive(Eq)] | A pre-processor defined literal                   |
+| META\_COMMENT     | # comment     | A single-line comment, removed by pre-processor   |
+| META\_DOC\_STRING | """doc"""     | A multi-line documentation string                 |
+| META\_EOF         |               | Token to represent end of file                    |
+| META\_ILLEGAL     |               | Token to represent unrecognized character         |
 
