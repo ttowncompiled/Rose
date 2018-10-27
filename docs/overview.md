@@ -7,6 +7,7 @@
 | KW\_AND       | and           | Logical and, infix operator                       |
 | KW\_AS        | as            | Casts left type to right type, aliases imports    |
 | KW\_BEGIN     | begin         | Declares a basic block                            |
+| KW\_BLANK     | _             | A non-binding variable, catch-all match           |
 | KW\_BORROW    | borrow        | Allocates a stack-to-stack pointer                |
 | KW\_BREAK     | break         | Terminates execution of a block                   |
 | KW\_CLASS     | class         | A stateful interface type                         |
@@ -136,6 +137,7 @@
 | Lexer             | Literal       | Description                                       |
 |-------------------|---------------|---------------------------------------------------|
 | LIT\_IDENT        | foo           | A variable, routine, or type identifier           |
+| LIT\_BLANK        | _             | A non-binding variable, catch-all for match       |
 | LIT\_INT          | 5             | A signed, i32 integer literal                     |
 | LIT\_FLOAT        | 5.0           | A signed, f64 float literal                       |
 | LIT\_INF          | Inf           | A literal for Infinity                            |

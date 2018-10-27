@@ -1,144 +1,15 @@
 #[derive(Debug, PartialEq)]
 pub enum TokenType {
-    // Meta-tokens
-    ILLEGAL,            // unrecognized character
-    EOF,                // end-of-file
-    PRE_PROC,           // #[foo]
-    COMMENT,            // single-line comment
-    DOC_STRING,         // multi-line comment
-    AS,                 // as performs cast
-    // Identifiers + Literals
-    IDENT,              // x, y, z
-    INT,                // 5
-    FLOAT,              // 5.0
-    BOOL,               // true, false
-    CHAR,               // 'a'
-    STRING,             // "a"
-    INF,                // Inf
-    NAN,                // NaN
-    NIL,                // nil
-    SYMBOL,             // :foo
-    MACRO,              // @foo
-    // Assignment Operators
-    ASSIGN,             // =
-    COLON_ASSIGN,       // := assign and infer type
-    PLUS_ASSIGN,        // +=
-    MINUS_ASSIGN,       // -=
-    ASTERISK_ASSIGN,    // *=
-    SLASH_ASSIGN,       // /=
-    MOD_ASSIGN,         // %=
-    // Unary Operators
-    PLUS,               // +    prefix
-    MINUS,              // -    prefix
-    IM,                 // im   postfix
-    BANG,               // !    prefix
-    // Arithmetic Operators
-    ASTERISK,           // *
-    SLASH,              // /
-    MOD,                // %
-    POW,                // ** exponentiation
-    DOUBLE_SLASH,       // // rational division
-    CMP,                // <=> comparitor
-    // Boolean Operators
-    EQ,                 // == equal
-    NEQ,                // != not equal
-    GT,                 // > greater than
-    GTE,                // >= greater than or equal to
-    LT,                 // < less than
-    LTE,                // <= less than or equal to
-    AND,                // and
-    OR,                 // or
-    XOR,                // xor
-    NOT,                // not
-    IS,                 // is
-    // Bitwise Operators
-    LSHIFT,             // << left-shift
-    RSHIFT,             // >> right-shift
-    LAND,               // && bitwise and
-    LOR,                // || bitwise or
-    LXOR,               // ^ bitwise xor
-    LNOT,               // ~ bitwise not
-    // Dispatch Operators
-    DOT,                // .
-    DOUBLE_COLON,       // ::
-    // Function Operators
-    PIPE,               // |
-    ARROW,              // ->
-    FAT_ARROW,          // =>
-    // Broadcast Operators
-    DOT_PLUS,           // .+
-    DOT_MINUS,          // .-
-    DOT_ASTERISK,       // .*
-    DOT_SLASH,          // ./
-    DOT_MOD,            // .%
-    DOT_POW,            // .**
-    DOT_DOUBLE_SLASH,   // .//
-    DOT_CMP,            // .<=>
-    // Range + Sequence Operators
-    DOUBLE_DOT,         // ..
-    TRIPLE_DOT,         // ...
-    // Delimiters
-    SEMICOLON,          // ;
-    NEWLINE,            // \n \r
-    COMMA,              // ,
-    COLON,              // :
-    // Collection + Scope Delimiters
-    LPAREN,             // (
-    RPAREN,             // )
-    LBRACE,             // {
-    RBRACE,             // }
-    LBRACKET,           // [
-    RBRACKET,           // ]
-    // Statement Operators
-    LET,                // let
-    // Block Operators
-    WITH,               // with
-    BEGIN,              // begin
-    DO,                 // do
-    END,                // end
-    // Branching Operators
-    IF,                 // if
-    ELSE,               // else
-    LOOP,               // loop
-    WHILE,              // while
-    FOR,                // for
-    IN,                 // in
-    OF,                 // of
-    MATCH,              // match
-    // Module Operators
-    MODULE,             // mod
-    USE,                // use
-    // Type Operators
-    CLASS,              // class
-    TRAIT,              // trait
-    DEF,                // def
-    FUNCTION,           // fn
-    STRUCT,             // struct
-    TUPLE,              // tuple
-    TYPE,               // type
-    EXT,                // ext
-    IMPL,               // impl
-    HAS,                // has
-    USES,               // uses
-    SELF,               // self
-    SELF_TYPE,          // Self
-    SUPER,              // super
-    SUPER_TYPE,         // Super
-    // Privacy Operators
-    PUB,                // pub
-    PRO,                // pro
-    // Binding Operators
-    MUT,                // mut
-    ABS,                // abs
-    CONST,              // const
-    STATIC,             // static
-    OVERRIDE,           // override
-    OVERLOAD,           // overload
-    // Allocation + Borrow + Ownership + Lifetime Operators
-    NEW,                // new
-    BORROW,             // &
-    MOVE,               // move
-    LIFETIME,           // '
+    META_ILLEGAL,
+    META_EOF,
+    OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    DEL_END,
+    LIT_IDENT,
+    LIT_BLANK,
+    LIT_INT,
 }
 
 #[derive(Debug, PartialEq)]
@@ -160,10 +31,6 @@ impl Token {
             char_offset:    char_offset,
         };
     }
-
-    pub fn len(&self) -> usize {
-        return self.literal.len();
-    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -176,18 +43,8 @@ pub struct TokenBuilder {
 }
 
 impl TokenBuilder {
-    pub fn new(file_name: String) -> TokenBuilder {
+    pub fn new(ttype: TokenType, literal: String, file_name: String, line_number: i64, char_offset: i64) -> TokenBuilder {
         return TokenBuilder{
-            ttype:          TokenType::ILLEGAL,
-            literal:        String::new(),
-            file_name:      file_name,
-            line_number:    0,
-            char_offset:    0,
-        };
-    }
-
-    pub fn done(ttype: TokenType, literal: String, file_name: String, line_number: i64, char_offset: i64) -> Token {
-        return Token{
             ttype:          ttype,
             literal:        literal,
             file_name:      file_name,
@@ -196,8 +53,12 @@ impl TokenBuilder {
         };
     }
 
+    pub fn push(&mut self, ch: char) {
+        self.literal.push(ch);
+    }
+
     pub fn build(&self) -> Option<Token> {
-        if self.literal != "" && self.line_number > 0 && self.char_offset > 0 {
+        if self.literal != "" && self.file_name != "" && self.line_number > 0 && self.char_offset > 0 {
             return Some(Token::new(self.ttype, self.literal, self.file_name, self.line_number, self.char_offset));
         }
         return None;
@@ -207,6 +68,7 @@ impl TokenBuilder {
 pub trait TokenFactory {
     fn new(file_name: String) -> Self;
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_offset: i64) -> Option<Token>;
+    fn complete(&mut self, line_number: i64, char_offset: i64) -> Option<Token>;
     fn is_letter(&self, ch: char) -> bool;
     fn is_digit(&self, ch: char) -> bool;
     fn is_special_char(&self, ch: char) -> bool;
@@ -226,14 +88,95 @@ impl TokenFactory for RoseTokenFactory {
         };
     }
 
-    fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_offset: i64) -> Option<Token> {
-        return match ch {
-            '+'     => Some(TokenBuilder::done(TokenType::ADD, String::from("+"), self.file_name, line_number, char_offset)),
-            '-'     => Some(TokenBuilder::done(TokenType::SUB, String::from("-"), self.file_name, line_number, char_offset)),
-            '*'     => Some(TokenBuilder::done(TokenType::MUL, String::from("*"), self.file_name, line_number, char_offset)),
-            '/'     => Some(TokenBuilder::done(TokenType::DIV, String::from("/"), self.file_name, line_number, char_offset)),
-            _       => None,
-        };
+    pub fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_offset: i64) -> Option<Token> {
+        match ch {
+            '+'     => return TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), self.file_name, line_number, char_offset).build(),
+            '-'     => return TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), self.file_name, line_number, char_offset).build(),
+            '*'     => return TokenBuilder::new(TokenType::OP_MUL, '*'.to_string(), self.file_name, line_number, char_offset).build(),
+            '/'     => return TokenBuilder::new(TokenType::OP_DIV, '/'.to_string(), self.file_name, line_number, char_offset).build(),
+            '\n'    => return TokenBuilder::new(TokenType::DEL_END, '\n'.to_string(), self.file_name, line_number, char_offset).build(),
+            '\r'    => return TokenBuilder::new(TokenType::DEL_END, '\r'.to_string(), self.file_name, line_number, char_offset).build(),
+            ';'     => return TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), self.file_name, line_number, char_offset).build(),
+            '_'     => {
+                match self.builder {
+                    Some(builder) => {
+                        if builder.ttype == TokenType::LIT_IDENT && (self.is_letter(peek_ch) || self.is_digit(peek_ch) || self.is_special_char(peek_ch)) {
+                            builder.push(ch);
+                            return None;
+                        } else if builder.ttype == TokenType::LIT_IDENT {
+                            builder.push(ch);
+                            self.builder = None;
+                            return builder.build();
+                        } else {
+                            panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, self.file_name, line_number, char_offset, builder);
+                        }
+                    },
+                    None => {
+                        if self.is_letter(peek_ch) {
+                            self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, '_'.to_string(), self.file_name, line_number, char_offset));
+                            return None;
+                        } else {
+                            return TokenBuilder::new(TokenType::LIT_BLANK, '_'.to_string(), self.file_name, line_number, char_offset).build();
+                        }
+                    },
+                }
+            },
+            _       => {
+                match self.builder {
+                    Some(builder) {
+                        if builder.ttype == TokenType::LIT_IDENT && (self.is_letter(ch) || self.is_digit(ch) || self.is_special_char(ch)) {
+                            if self.is_special_char(ch) {
+                                builder.push(ch);
+                                self.builder = None;
+                                return builder.build();
+                            }
+                            if self.is_letter(peek_ch) || self.is_digit(peek_ch) || self.is_special_char(peek_ch) {
+                                build.push(ch);
+                                return None;
+                            } else {
+                                builder.push(ch);
+                                self.builder = None;
+                                return builder.build();
+                            }
+                        } else if builder.ttype == TokenType::LIT_INT && self.is_digit(ch) {
+                            if self.is_digit(peek_ch) {
+                                builder.push(ch);
+                                return None;
+                            } else {
+                                builder.push(ch);
+                                self.builder = None;
+                                return builder.build();
+                            }
+                        } else {
+                            panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, self.file_name, line_number, char_offset, builder);
+                        }
+                    },
+                    None => {
+                        if self.is_letter(ch) {
+                            if self.is_letter(peek_ch) || self.is_digit(peek_ch) || self.is_special_char(peek_ch) {
+                                self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), self.file_name, line_number, char_offset));
+                                return None;
+                            } else {
+                                return TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), self.file_name, line_number, char_offset).build();
+                            }
+                        } else if self.is_digit(ch) {
+                            if self.is_digit(peek_ch) {
+                                self.builder = Some(TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), self.file_name, line_number, char_offset));
+                                return None;
+                            } else {
+                                return TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), self.file_name, line_number, char_offset).build();
+                            }
+                        } else {
+                            return TokenBuilder::new(TokenType::META_ILLEGAL, ch.to_string(), self.file_name, line_number, char_offset).build();
+                        }
+                    },
+                }
+            },
+        }
+    }
+
+    pub fn complete(&mut self, line_number: i64, char_offset: i64) -> Option<Token> {
+        return TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), self.file_name, line_number, char_offset).build();
     }
 
     pub fn is_letter(&self, ch: char) -> bool {
