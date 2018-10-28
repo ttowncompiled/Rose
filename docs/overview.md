@@ -1,6 +1,11 @@
 # Rose lang overview
 
 # Keywords
+*Keywords are noted because they have significant meaning in the language. However,
+keywords can be reused for other purposes or used across multiple types. Some of these
+keywords relate to traits that will be implemented in the std library. Reserved words
+which can not be overloaded will be marked RW instead of KW.*
+
 | Lexer         | Keyword       | Description                                       |
 |---------------|---------------|---------------------------------------------------|
 | KW\_ABSTRACT  | abstract      | Declares an abstract type or routine definition   |
@@ -15,6 +20,7 @@
 | KW\_CALL      | call          | Calls a routine                                   |
 | KW\_CLASS     | class         | A stateful interface type                         |
 | KW\_CLONE     | clone         | Creates a deep copy                               |
+| KW\_CLOSE     | close         | Frees an OS resource                              |
 | KW\_CONST     | const         | For const bindings (immutable, no-shadowing)      |
 | KW\_CONTINUE  | continue      | Jumps within the block                            |
 | KW\_COPY      | copy          | Creates a shallow copy                            |
@@ -53,6 +59,7 @@
 | KW\_NEW       | new           | Allocates heap memory and a stack-to-heap pointer |
 | KW\_NIL       | nil           | The nil or null type                              |
 | KW\_NOT       | not           | Logical not, prefix unary operator                |
+| KW\_OPEN      | open          | Claims an OS resource                             |
 | KW\_OR        | or            | Logical or, infix operator                        |
 | KW\_OVERLOAD  | overload      | Declares a routine overload for the dispatcher    |
 | KW\_OVERRIDE  | override      | Declares a routine override for the dispatcher    |
