@@ -48,7 +48,7 @@ which can not be overloaded will be marked RW instead of KW.*
 | KW\_IN        | in            | Binds left var to right collection, membership    |
 | KW\_INF       | Inf           | Infinity                                          |
 | KW\_IS        | is            | Strict equality check, infix operator             |
-| KW\_LET       | let           | Declares a variable binding                       |
+| RW\_LET       | let           | Declares a variable binding                       |
 | KW\_LOOP      | loop          | Basic loop block, classic for-loop                |
 | KW\_MACRO     | macro         | Declares a custom macro                           |
 | KW\_MATCH     | match         | Pattern matching, switch expression               |
