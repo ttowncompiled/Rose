@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum TokenType {
     META_ILLEGAL,
     META_EOF,
@@ -12,7 +12,7 @@ pub enum TokenType {
     LIT_INT,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Token {
     pub ttype:          TokenType,
     pub literal:        String,
@@ -33,7 +33,7 @@ impl Token {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct TokenBuilder {
     pub ttype:          TokenType,
     pub literal:        String,
