@@ -226,6 +226,47 @@ impl TokenFactory for RoseTokenFactory {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::str::Chars;
+    use std::iter::Peekable;
+
+    #[test]
+    fn test_manufacture() {
+        test_factory_with("\\".to_string(), TokenType::META_ILLEGAL);
+        test_factory_with("let".to_string(), TokenType::RW_LET);
+        test_factory_with("+".to_string(), TokenType::OP_ADD);
+        test_factory_with("-".to_string(), TokenType::OP_SUB);
+        test_factory_with("*".to_string(), TokenType::OP_MUL);
+        test_factory_with("/".to_string(), TokenType::OP_DIV);
+        test_factory_with("\n".to_string(), TokenType::DEL_END);
+        test_factory_with("\r".to_string(), TokenType::DEL_END);
+        test_factory_with(";".to_string(), TokenType::DEL_END);
+        test_factory_with("x".to_string(), TokenType::LIT_IDENT);
+        test_factory_with("foo".to_string(), TokenType::LIT_IDENT);
+        test_factory_with("_F_o_O_1_!".to_string(), TokenType::LIT_IDENT);
+        test_factory_with("_".to_string(), TokenType::LIT_BLANK);
+        test_factory_with("5".to_string(), TokenType::LIT_INT);
+        test_factory_with("55".to_string(), TokenType::LIT_INT);
+    }
+
+    fn test_factory_with(input: String, exp_ttype: TokenType) {
+        let mut factory: RoseTokenFactory = RoseTokenFactory::new(input.clone());
+        let mut chars: Peekable<Chars> = input.chars().peekable();
+        let mut cp: i64 = 1;
+        while cp < input.len() as i64 {
+            test_token(&mut factory, input.clone(), chars.next().unwrap_or('\0'), *chars.peek().unwrap_or(&'\0'), 1, cp, None);
+            cp += 1;
+        }
+        test_token(&mut factory, input.clone(), chars.next().unwrap_or('\0'), '\0', 1, cp, Some(exp_ttype));
+    }
+
+    fn test_token(factory: &mut RoseTokenFactory, input: String, ch: char, peek_ch: char, ln: i64, cp: i64, exp_ttype: Option<TokenType>) {
+        let expected: Option<Token> = match exp_ttype {
+            Some(ttype) => Some(Token::new(ttype, input.clone(), input.clone(), 1, 1)),
+            None => None,
+        };
+        let got: Option<Token> = factory.manufacture(ch, peek_ch, ln, cp);
+        assert_eq!(expected, got, "test \"{}\"", input);
+    }
 
     #[test]
     fn test_lookup_ident() {
