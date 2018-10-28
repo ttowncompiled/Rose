@@ -68,8 +68,6 @@ impl TokenBuilder {
 pub trait TokenFactory {
     fn new(file_name: String) -> Self;
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_position: i64) -> Option<Token>;
-    fn close(&mut self, line_number: i64, char_position: i64) -> Option<Token>;
-    fn is_closed(&self) -> bool;
     fn lookup_ident(literal: &str) -> TokenType;
     fn is_letter(ch: char) -> bool;
     fn is_digit(ch: char) -> bool;
@@ -80,7 +78,6 @@ pub trait TokenFactory {
 pub struct RoseTokenFactory {
     pub file_name:      String,
     builder:            Option<TokenBuilder>,
-    closed:             bool,
 }
 
 impl TokenFactory for RoseTokenFactory {
@@ -88,16 +85,13 @@ impl TokenFactory for RoseTokenFactory {
         return RoseTokenFactory{
             file_name:      file_name,
             builder:        None,
-            closed:         false,
         };
     }
 
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_position: i64) -> Option<Token> {
-        if self.closed {
-            return None
-        }
         let mut token: Option<Token>;
         match ch {
+            '\0'    => token = TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '+'     => token = TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '-'     => token = TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '*'     => token = TokenBuilder::new(TokenType::OP_MUL, '*'.to_string(), line_number, char_position).build(self.file_name.clone()),
@@ -188,17 +182,6 @@ impl TokenFactory for RoseTokenFactory {
         return token;
     }
 
-    fn close(&mut self, line_number: i64, char_position: i64) -> Option<Token> {
-        if self.closed {
-            return None
-        }
-        return TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), line_number, char_position).build(self.file_name.clone());
-    }
-
-    fn is_closed(&self) -> bool {
-        return self.closed;
-    }
-
     fn lookup_ident(literal: &str) -> TokenType {
         return match literal {
             "let"   => TokenType::RW_LET,
@@ -232,6 +215,7 @@ mod tests {
     #[test]
     fn test_manufacture() {
         test_factory_with("\\".to_string(), TokenType::META_ILLEGAL);
+        test_factory_with("\0".to_string(), TokenType::META_EOF);
         test_factory_with("let".to_string(), TokenType::RW_LET);
         test_factory_with("+".to_string(), TokenType::OP_ADD);
         test_factory_with("-".to_string(), TokenType::OP_SUB);
