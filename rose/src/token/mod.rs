@@ -74,11 +74,6 @@ impl TokenBuilder {
 pub trait TokenFactory {
     fn new(file_name: String) -> Self;
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_position: i64) -> Option<Token>;
-    fn lookup_ident(literal: &str) -> TokenType;
-    fn is_letter(ch: char) -> bool;
-    fn is_digit(ch: char) -> bool;
-    fn is_special_char(ch: char) -> bool;
-    fn is_whitespace(ch: char) -> bool;
 }
 
 pub struct RoseTokenFactory {
@@ -211,6 +206,12 @@ impl TokenFactory for RoseTokenFactory {
         }
         return token;
     }
+}
+
+impl RoseTokenFactory {
+    fn throw_manufacture_error(ch: char, file_name: String, line_number: i64, char_position: i64, builder: &TokenBuilder) {
+        panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, file_name, line_number, char_position, builder);
+    }
 
     fn lookup_ident(literal: &str) -> TokenType {
         return match literal {
@@ -231,14 +232,8 @@ impl TokenFactory for RoseTokenFactory {
         return ch == '!' || ch == '?';
     }
 
-    fn is_whitespace(ch: char) -> bool {
+    pub fn is_whitespace(ch: char) -> bool {
         return ch == ' ' || ch == '\t';
-    }
-}
-
-impl RoseTokenFactory {
-    fn throw_manufacture_error(ch: char, file_name: String, line_number: i64, char_position: i64, builder: &TokenBuilder) {
-        panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, file_name, line_number, char_position, builder);
     }
 }
 
