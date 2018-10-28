@@ -6,23 +6,35 @@
 | KW\_ABSTRACT  | abstract      | Declares an abstract type or routine definition   |
 | KW\_AND       | and           | Logical and, infix operator                       |
 | KW\_AS        | as            | Casts left type to right type, aliases imports    |
+| KW\_ASSERT    | assert        | A reserved macro for declaring assertions         |
+| KW\_AWAIT     | await         | Queues function call to the event queue           |
 | KW\_BEGIN     | begin         | Declares a basic block                            |
 | KW\_BLANK     | _             | A non-binding variable, catch-all match           |
 | KW\_BORROW    | borrow        | Allocates a stack-to-stack pointer                |
 | KW\_BREAK     | break         | Terminates execution of a block                   |
+| KW\_CALL      | call          | Calls a routine                                   |
 | KW\_CLASS     | class         | A stateful interface type                         |
+| KW\_CLONE     | clone         | Creates a deep copy                               |
 | KW\_CONST     | const         | For const bindings (immutable, no-shadowing)      |
 | KW\_CONTINUE  | continue      | Jumps within the block                            |
+| KW\_COPY      | copy          | Creates a shallow copy                            |
 | KW\_DEF       | def           | Defines a routine for the dispatcher              |
+| KW\_DEFER     | defer         | Defers execution to end of block                  |
+| KW\_DERIVE    | derive        | A reserved keyword for procedural macros          |
 | KW\_DO        | do            | Declares an isolated block                        |
+| KW\_DROP      | drop          | Deallocates heap memory                           |
 | KW\_ELSE      | else          | Alternative branch                                |
 | KW\_END       | end           | Marks the end of a block                          |
 | KW\_ENUM      | enum          | Enumerated type                                   |
+| KW\_EXIT      | exit          | A reserved macro for exiting the program          |
+| KW\_EXPECT    | expect        | A reserved macro for declaring expectations       |
 | KW\_EXT       | ext           | Declares ext relationship                         |
 | KW\_FALSE     | false         | The false Boolean literal                         |
 | KW\_FINAL     | final         | Declares a final binding                          |
 | KW\_FN        | fn            | Anonymous closure definition                      |
 | KW\_FOR       | for           | Loop for iterable collections                     |
+| KW\_GET       | get           | Defines a getter routine                          |
+| KW\_GETS      | gets          | A reserved macro for getting standard input       |
 | KW\_HAS       | has           | Declares has relationship                         |
 | KW\_IF        | if            | Primary branch                                    |
 | KW\_IM        | im            | The imaginary type postfix unary operator         |
@@ -44,12 +56,18 @@
 | KW\_OR        | or            | Logical or, infix operator                        |
 | KW\_OVERLOAD  | overload      | Declares a routine overload for the dispatcher    |
 | KW\_OVERRIDE  | override      | Declares a routine override for the dispatcher    |
+| KW\_PANIC     | panic         | A reserved macro for throwing an err              |
+| KW\_PRINT     | print         | A reserved macro for printing to std out          |
+| KW\_PRIV      | priv          | Private type or binding                           |
 | KW\_PRO       | pro           | Protected type or binding                         |
 | KW\_PUB       | pub           | Publicly available type or binding                |
+| KW\_PUTS      | puts          | A reserved macro for printing to std out with '\n'|
 | KW\_REF       | ref           | Keyword used for matching borrows and boxes       |
 | KW\_RETURN    | return        | Terminates block and returns right value          |
+| KW\_SAVE      | save          | A reserved macro for saving the current program   |
 | KW\_SELFVALUE | self          | Instance of the current context                   |
 | KW\_SELFTYPE  | Self          | Type of the current context                       |
+| KW\_SET       | set           | Defines a setter routine                          |
 | KW\_STATIC    | static        | Declares a static binding (singleton, eternal)    |
 | KW\_STRUCT    | struct        | Declares a struct type                            |
 | KW\_SUPERVALUE| super         | Parent of the instance of the current context     |
@@ -59,6 +77,7 @@
 | KW\_TUPLE     | tuple         | Declares a tuple type                             |
 | KW\_TYPE      | type          | Declares a type alias                             |
 | KW\_TYPEOF    | typeof        | Casts a var to its symbolic type                  |
+| KW\_UNTIL     | until         | Declares an event trigger for the dispatcher      |
 | KW\_USE       | use           | Imports module from root                          |
 | KW\_USES      | uses          | Declares uses relationship                        |
 | KW\_VIRTUAL   | virtual       | Declares a virtual routine definition             |
@@ -151,8 +170,8 @@
 # Meta-tokens
 | Lexer             | Literal       | Description                                       |
 |-------------------|---------------|---------------------------------------------------|
-| META\_MACRO       | @puts         | A compiler/interpreter defined macro              |
-| META\_PRE\_MACRO  | #[derive(Eq)] | A pre-processor defined macro                     |
+| META\_MACRO       | @puts         | A declarative macro                               |
+| META\_PRE\_MACRO  | #[derive(Eq)] | A procedural macro                                |
 | META\_COMMENT     | # comment     | A single-line comment, removed by pre-processor   |
 | META\_DOC\_STRING | """doc"""     | A multi-line documentation string                 |
 | META\_EOF         |               | Token to represent end of file                    |
