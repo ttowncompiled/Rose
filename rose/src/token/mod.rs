@@ -8,7 +8,13 @@ pub enum TokenType {
     OP_SUB,
     OP_MUL,
     OP_DIV,
+    OP_MOD,
+    OP_POW,
+    OP_ASSIGN,
     DEL_END,
+    DEL_COLON,
+    DEL_LPAREN,
+    DEL_RPAREN,
     LIT_IDENT,
     LIT_BLANK,
     LIT_INT,
@@ -89,13 +95,34 @@ impl TokenFactory for RoseTokenFactory {
     }
 
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_position: i64) -> Option<Token> {
-        let mut token: Option<Token>;
+        let mut token: Option<Token> = None;
         match ch {
             '\0'    => token = TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '+'     => token = TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '-'     => token = TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            '*'     => token = TokenBuilder::new(TokenType::OP_MUL, '*'.to_string(), line_number, char_position).build(self.file_name.clone()),
+            '*'     => {
+                match self.builder {
+                    Some(ref mut builder) => {
+                        if builder.ttype == TokenType::OP_POW {
+                            builder.push(ch);
+                            token = builder.build(self.file_name.clone());
+                        } else {
+                            Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
+                        }
+                    },
+                    None => {
+                        if peek_ch == '*' {
+                            self.builder = Some(TokenBuilder::new(TokenType::OP_POW, '*'.to_string(), line_number, char_position));
+                            token = None;
+                        } else {
+                            token = TokenBuilder::new(TokenType::OP_MUL, '*'.to_string(), line_number, char_position).build(self.file_name.clone());
+                        }
+                    },
+                }
+            },
             '/'     => token = TokenBuilder::new(TokenType::OP_DIV, '/'.to_string(), line_number, char_position).build(self.file_name.clone()),
+            '%'     => token = TokenBuilder::new(TokenType::OP_MOD, '%'.to_string(), line_number, char_position).build(self.file_name.clone()),
+            '='     => token = TokenBuilder::new(TokenType::OP_ASSIGN, '='.to_string(), line_number, char_position).build(self.file_name.clone()),
             '\n'    => token = TokenBuilder::new(TokenType::DEL_END, '\n'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '\r'    => token = TokenBuilder::new(TokenType::DEL_END, '\r'.to_string(), line_number, char_position).build(self.file_name.clone()),
             ';'     => token = TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), line_number, char_position).build(self.file_name.clone()),
@@ -109,7 +136,7 @@ impl TokenFactory for RoseTokenFactory {
                             builder.push(ch);
                             token = builder.build(self.file_name.clone());
                         } else {
-                            panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, self.file_name.clone(), line_number, char_position, builder);
+                            Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
                         }
                     },
                     None => {
@@ -122,6 +149,9 @@ impl TokenFactory for RoseTokenFactory {
                     },
                 }
             },
+            '('     => token = TokenBuilder::new(TokenType::DEL_LPAREN, '('.to_string(), line_number, char_position).build(self.file_name.clone()),
+            ')'     => token = TokenBuilder::new(TokenType::DEL_RPAREN, ')'.to_string(), line_number, char_position).build(self.file_name.clone()),
+            ':'     => token = TokenBuilder::new(TokenType::DEL_COLON, ':'.to_string(), line_number, char_position).build(self.file_name.clone()),
             _       => {
                 match self.builder {
                     Some(ref mut builder) => {
@@ -145,7 +175,7 @@ impl TokenFactory for RoseTokenFactory {
                                 token = builder.build(self.file_name.clone());
                             }
                         } else {
-                            panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, self.file_name.clone(), line_number, char_position, builder);
+                            Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
                         }
                     },
                     None => {
@@ -206,6 +236,12 @@ impl TokenFactory for RoseTokenFactory {
     }
 }
 
+impl RoseTokenFactory {
+    fn throw_manufacture_error(ch: char, file_name: String, line_number: i64, char_position: i64, builder: &TokenBuilder) {
+        panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, file_name, line_number, char_position, builder);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -221,9 +257,15 @@ mod tests {
         test_factory_with("-".to_string(), TokenType::OP_SUB);
         test_factory_with("*".to_string(), TokenType::OP_MUL);
         test_factory_with("/".to_string(), TokenType::OP_DIV);
+        test_factory_with("%".to_string(), TokenType::OP_MOD);
+        test_factory_with("**".to_string(), TokenType::OP_POW);
+        test_factory_with("=".to_string(), TokenType::OP_ASSIGN);
         test_factory_with("\n".to_string(), TokenType::DEL_END);
         test_factory_with("\r".to_string(), TokenType::DEL_END);
         test_factory_with(";".to_string(), TokenType::DEL_END);
+        test_factory_with("(".to_string(), TokenType::DEL_LPAREN);
+        test_factory_with(")".to_string(), TokenType::DEL_RPAREN);
+        test_factory_with(":".to_string(), TokenType::DEL_COLON);
         test_factory_with("x".to_string(), TokenType::LIT_IDENT);
         test_factory_with("foo".to_string(), TokenType::LIT_IDENT);
         test_factory_with("_F_o_O_1_!".to_string(), TokenType::LIT_IDENT);
