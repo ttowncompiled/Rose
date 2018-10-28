@@ -3,6 +3,7 @@
 pub enum TokenType {
     META_ILLEGAL,
     META_EOF,
+    RW_LET,
     OP_ADD,
     OP_SUB,
     OP_MUL,
@@ -35,7 +36,7 @@ impl Token {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct TokenBuilder {
+struct TokenBuilder {
     pub ttype:          TokenType,
     pub literal:        String,
     pub file_name:      String,
@@ -70,6 +71,8 @@ pub trait TokenFactory {
     fn new(file_name: String) -> Self;
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_offset: i64) -> Option<Token>;
     fn close(&mut self, line_number: i64, char_offset: i64) -> Option<Token>;
+    fn is_closed(&self) -> bool;
+    fn lookup_ident(literal: &str) -> TokenType;
     fn is_letter(ch: char) -> bool;
     fn is_digit(ch: char) -> bool;
     fn is_special_char(ch: char) -> bool;
@@ -78,7 +81,7 @@ pub trait TokenFactory {
 
 pub struct RoseTokenFactory {
     pub file_name:      String,
-    pub builder:        Option<TokenBuilder>,
+    builder:        Option<TokenBuilder>,
     closed:             bool,
 }
 
@@ -95,7 +98,7 @@ impl TokenFactory for RoseTokenFactory {
         if self.closed {
             return None
         }
-        let token: Option<Token>;
+        let mut token: Option<Token>;
         match ch {
             '+'     => token = TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
             '-'     => token = TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
@@ -175,8 +178,14 @@ impl TokenFactory for RoseTokenFactory {
                 }
             },
         }
-        if token.is_some() {
-            self.builder = None;
+        match token {
+            Some(ref mut tok) => {
+                if tok.ttype == TokenType::LIT_IDENT {
+                    tok.ttype = Self::lookup_ident(&tok.literal);
+                }
+                self.builder = None;
+            },
+            None => (),
         }
         return token;
     }
@@ -186,6 +195,17 @@ impl TokenFactory for RoseTokenFactory {
             return None
         }
         return TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), self.file_name.clone(), line_number, char_offset).build();
+    }
+
+    fn is_closed(&self) -> bool {
+        return self.closed;
+    }
+
+    fn lookup_ident(literal: &str) -> TokenType {
+        return match literal {
+            "let"   => TokenType::RW_LET,
+            _       => TokenType::LIT_IDENT,
+        };
     }
 
     fn is_letter(ch: char) -> bool {
@@ -202,6 +222,16 @@ impl TokenFactory for RoseTokenFactory {
 
     fn is_whitespace(ch: char) -> bool {
         return ch == ' ' || ch == '\t';
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_lookup_ident() {
+        assert_eq!(RoseTokenFactory::lookup_ident(&("let".to_string())), TokenType::RW_LET);
     }
 }
 
