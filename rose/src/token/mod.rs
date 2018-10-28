@@ -1,4 +1,5 @@
-#[derive(Debug, PartialEq, Eq)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TokenType {
     META_ILLEGAL,
     META_EOF,
@@ -58,8 +59,8 @@ impl TokenBuilder {
     }
 
     pub fn build(&self) -> Option<Token> {
-        if self.literal != "" && self.file_name != "" && self.line_number > 0 && self.char_offset > 0 {
-            return Some(Token::new(self.ttype, self.literal, self.file_name, self.line_number, self.char_offset));
+        if self.literal != "" && self.file_name.clone() != "" && self.line_number > 0 && self.char_offset > 0 {
+            return Some(Token::new(self.ttype.clone(), self.literal.clone(), self.file_name.clone(), self.line_number, self.char_offset));
         }
         return None;
     }
@@ -68,16 +69,17 @@ impl TokenBuilder {
 pub trait TokenFactory {
     fn new(file_name: String) -> Self;
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_offset: i64) -> Option<Token>;
-    fn complete(&mut self, line_number: i64, char_offset: i64) -> Option<Token>;
-    fn is_letter(&self, ch: char) -> bool;
-    fn is_digit(&self, ch: char) -> bool;
-    fn is_special_char(&self, ch: char) -> bool;
-    fn is_whitespace(&self, ch: char) -> bool;
+    fn close(&mut self, line_number: i64, char_offset: i64) -> Option<Token>;
+    fn is_letter(ch: char) -> bool;
+    fn is_digit(ch: char) -> bool;
+    fn is_special_char(ch: char) -> bool;
+    fn is_whitespace(ch: char) -> bool;
 }
 
 pub struct RoseTokenFactory {
     pub file_name:      String,
     pub builder:        Option<TokenBuilder>,
+    closed:             bool,
 }
 
 impl TokenFactory for RoseTokenFactory {
@@ -85,113 +87,120 @@ impl TokenFactory for RoseTokenFactory {
         return RoseTokenFactory{
             file_name:      file_name,
             builder:        None,
+            closed:         false,
         };
     }
 
-    pub fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_offset: i64) -> Option<Token> {
+    fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_offset: i64) -> Option<Token> {
+        if self.closed {
+            return None
+        }
+        let token: Option<Token>;
         match ch {
-            '+'     => return TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), self.file_name, line_number, char_offset).build(),
-            '-'     => return TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), self.file_name, line_number, char_offset).build(),
-            '*'     => return TokenBuilder::new(TokenType::OP_MUL, '*'.to_string(), self.file_name, line_number, char_offset).build(),
-            '/'     => return TokenBuilder::new(TokenType::OP_DIV, '/'.to_string(), self.file_name, line_number, char_offset).build(),
-            '\n'    => return TokenBuilder::new(TokenType::DEL_END, '\n'.to_string(), self.file_name, line_number, char_offset).build(),
-            '\r'    => return TokenBuilder::new(TokenType::DEL_END, '\r'.to_string(), self.file_name, line_number, char_offset).build(),
-            ';'     => return TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), self.file_name, line_number, char_offset).build(),
+            '+'     => token = TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
+            '-'     => token = TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
+            '*'     => token = TokenBuilder::new(TokenType::OP_MUL, '*'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
+            '/'     => token = TokenBuilder::new(TokenType::OP_DIV, '/'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
+            '\n'    => token = TokenBuilder::new(TokenType::DEL_END, '\n'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
+            '\r'    => token = TokenBuilder::new(TokenType::DEL_END, '\r'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
+            ';'     => token = TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), self.file_name.clone(), line_number, char_offset).build(),
             '_'     => {
                 match self.builder {
-                    Some(builder) => {
-                        if builder.ttype == TokenType::LIT_IDENT && (self.is_letter(peek_ch) || self.is_digit(peek_ch) || self.is_special_char(peek_ch)) {
+                    Some(ref mut builder) => {
+                        if builder.ttype == TokenType::LIT_IDENT && (Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch)) {
                             builder.push(ch);
-                            return None;
+                            token = None;
                         } else if builder.ttype == TokenType::LIT_IDENT {
                             builder.push(ch);
-                            self.builder = None;
-                            return builder.build();
+                            token = builder.build();
                         } else {
-                            panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, self.file_name, line_number, char_offset, builder);
+                            panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, self.file_name.clone(), line_number, char_offset, builder);
                         }
                     },
                     None => {
-                        if self.is_letter(peek_ch) {
-                            self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, '_'.to_string(), self.file_name, line_number, char_offset));
-                            return None;
+                        if Self::is_letter(peek_ch) {
+                            self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, '_'.to_string(), self.file_name.clone(), line_number, char_offset));
+                            token = None;
                         } else {
-                            return TokenBuilder::new(TokenType::LIT_BLANK, '_'.to_string(), self.file_name, line_number, char_offset).build();
+                            token = TokenBuilder::new(TokenType::LIT_BLANK, '_'.to_string(), self.file_name.clone(), line_number, char_offset).build();
                         }
                     },
                 }
             },
             _       => {
                 match self.builder {
-                    Some(builder) {
-                        if builder.ttype == TokenType::LIT_IDENT && (self.is_letter(ch) || self.is_digit(ch) || self.is_special_char(ch)) {
-                            if self.is_special_char(ch) {
+                    Some(ref mut builder) => {
+                        if builder.ttype == TokenType::LIT_IDENT && (Self::is_letter(ch) || Self::is_digit(ch) || Self::is_special_char(ch)) {
+                            if Self::is_special_char(ch) {
                                 builder.push(ch);
-                                self.builder = None;
-                                return builder.build();
-                            }
-                            if self.is_letter(peek_ch) || self.is_digit(peek_ch) || self.is_special_char(peek_ch) {
-                                build.push(ch);
-                                return None;
+                                token = builder.build();
+                            } else if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) {
+                                builder.push(ch);
+                                token = None;
                             } else {
                                 builder.push(ch);
-                                self.builder = None;
-                                return builder.build();
+                                token = builder.build();
                             }
-                        } else if builder.ttype == TokenType::LIT_INT && self.is_digit(ch) {
-                            if self.is_digit(peek_ch) {
+                        } else if builder.ttype == TokenType::LIT_INT && Self::is_digit(ch) {
+                            if Self::is_digit(peek_ch) {
                                 builder.push(ch);
-                                return None;
+                                token = None;
                             } else {
                                 builder.push(ch);
-                                self.builder = None;
-                                return builder.build();
+                                token = builder.build();
                             }
                         } else {
-                            panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, self.file_name, line_number, char_offset, builder);
+                            panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, self.file_name.clone(), line_number, char_offset, builder);
                         }
                     },
                     None => {
-                        if self.is_letter(ch) {
-                            if self.is_letter(peek_ch) || self.is_digit(peek_ch) || self.is_special_char(peek_ch) {
-                                self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), self.file_name, line_number, char_offset));
-                                return None;
+                        if Self::is_letter(ch) {
+                            if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) {
+                                self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), self.file_name.clone(), line_number, char_offset));
+                                token = None;
                             } else {
-                                return TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), self.file_name, line_number, char_offset).build();
+                                token = TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), self.file_name.clone(), line_number, char_offset).build();
                             }
-                        } else if self.is_digit(ch) {
-                            if self.is_digit(peek_ch) {
-                                self.builder = Some(TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), self.file_name, line_number, char_offset));
-                                return None;
+                        } else if Self::is_digit(ch) {
+                            if Self::is_digit(peek_ch) {
+                                self.builder = Some(TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), self.file_name.clone(), line_number, char_offset));
+                                token = None
                             } else {
-                                return TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), self.file_name, line_number, char_offset).build();
+                                token = TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), self.file_name.clone(), line_number, char_offset).build();
                             }
                         } else {
-                            return TokenBuilder::new(TokenType::META_ILLEGAL, ch.to_string(), self.file_name, line_number, char_offset).build();
+                            token = TokenBuilder::new(TokenType::META_ILLEGAL, ch.to_string(), self.file_name.clone(), line_number, char_offset).build();
                         }
                     },
                 }
             },
         }
+        if token.is_some() {
+            self.builder = None;
+        }
+        return token;
     }
 
-    pub fn complete(&mut self, line_number: i64, char_offset: i64) -> Option<Token> {
-        return TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), self.file_name, line_number, char_offset).build();
+    fn close(&mut self, line_number: i64, char_offset: i64) -> Option<Token> {
+        if self.closed {
+            return None
+        }
+        return TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), self.file_name.clone(), line_number, char_offset).build();
     }
 
-    pub fn is_letter(&self, ch: char) -> bool {
+    fn is_letter(ch: char) -> bool {
         return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_';
     }
 
-    pub fn is_digit(&self, ch: char) -> bool {
+    fn is_digit(ch: char) -> bool {
         return '0' <= ch && ch <= '9';
     }
 
-    pub fn is_special_char(&self, ch: char) -> bool {
+    fn is_special_char(ch: char) -> bool {
         return ch == '!' || ch == '?';
     }
 
-    pub fn is_whitespace(&self, ch: char) -> bool {
+    fn is_whitespace(ch: char) -> bool {
         return ch == ' ' || ch == '\t';
     }
 }
