@@ -18,18 +18,18 @@ pub struct RoseLexer<'a> {
     line_number:        i64,
     char_position:      i64,
     ch:                 char,
-    token_factory:      Box<RoseTokenFactory>,
+    token_factory:      RoseTokenFactory,
 }
 
 impl<'a> Lexer<'a> for RoseLexer<'a> {
     fn new(input: &'a str, file_name: String) -> RoseLexer<'a> {
         let mut l = RoseLexer{
-            input:          input,
-            chars:          input.chars().peekable(),
-            line_number:    1,
-            char_position:  1,
-            ch:             '\0',
-            token_factory:  Box::new(RoseTokenFactory::new(file_name)),
+            input:              input,
+            chars:              input.chars().peekable(),
+            line_number:        1,
+            char_position:      1,
+            ch:                 '\0',
+            token_factory:      RoseTokenFactory::new(file_name),
         };
         l.read_char();
         return l;
