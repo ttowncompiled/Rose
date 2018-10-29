@@ -37,6 +37,6 @@ mod test {
     #[test]
     fn test_to_string() {
         let nan: NaN = NaN::new(Token::new(TokenType::LIT_NAN, "NaN".to_string(), 1, 1));
-        assert_eq!("NaN".to_string(), nan.to_string());
+        assert_eq!("NaN", nan.to_string());
     }
 }

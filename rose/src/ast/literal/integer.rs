@@ -42,6 +42,6 @@ mod test {
             Token::new(TokenType::LIT_INT, "5".to_string(), 1, 1),
             5,
         );
-        assert_eq!("5".to_string(), il.to_string());
+        assert_eq!("5", il.to_string());
     }
 }

@@ -42,11 +42,11 @@ mod test {
             Token::new(TokenType::LIT_BOOL, "true".to_string(), 1, 1),
             true,
         );
-        assert_eq!("true".to_string(), bl.to_string());
+        assert_eq!("true", bl.to_string());
         let bl: BooleanLiteral = BooleanLiteral::new(
             Token::new(TokenType::LIT_BOOL, "false".to_string(), 1, 1),
             false,
         );
-        assert_eq!("false".to_string(), bl.to_string());
+        assert_eq!("false", bl.to_string());
     }
 }

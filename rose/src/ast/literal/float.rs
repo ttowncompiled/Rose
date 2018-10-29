@@ -42,6 +42,6 @@ mod test {
             Token::new(TokenType::LIT_FLOAT, "5.5".to_string(), 1, 1),
             5.5,
         );
-        assert_eq!("5.5".to_string(), fl.to_string());
+        assert_eq!("5.5", fl.to_string());
     }
 }

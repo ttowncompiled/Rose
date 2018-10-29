@@ -37,6 +37,6 @@ mod test {
     #[test]
     fn test_to_string() {
         let blank: Blank = Blank::new(Token::new(TokenType::LIT_BLANK, "_".to_string(), 1, 1));
-        assert_eq!("_".to_string(), blank.to_string());
+        assert_eq!("_", blank.to_string());
     }
 }

@@ -42,6 +42,6 @@ mod test {
             Token::new(TokenType::LIT_SYMBOL, ":foo".to_string(), 1, 1),
             ":foo".to_string(),
         );
-        assert_eq!(":foo".to_string(), sym.to_string());
+        assert_eq!(":foo", sym.to_string());
     }
 }

@@ -37,6 +37,6 @@ mod test {
     #[test]
     fn test_to_string() {
         let inf: Inf = Inf::new(Token::new(TokenType::LIT_INF, "Inf".to_string(), 1, 1));
-        assert_eq!("Inf".to_string(), inf.to_string());
+        assert_eq!("Inf", inf.to_string());
     }
 }

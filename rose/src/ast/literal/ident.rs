@@ -42,6 +42,6 @@ mod test {
             Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1),
             "foo".to_string(),
         );
-        assert_eq!("foo".to_string(), ident.to_string());
+        assert_eq!("foo", ident.to_string());
     }
 }

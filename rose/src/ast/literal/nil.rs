@@ -37,6 +37,6 @@ mod test {
     #[test]
     fn test_to_string() {
         let nl: Nil = Nil::new(Token::new(TokenType::LIT_NIL, "nil".to_string(), 1, 1));
-        assert_eq!("nil".to_string(), nl.to_string());
+        assert_eq!("nil", nl.to_string());
     }
 }

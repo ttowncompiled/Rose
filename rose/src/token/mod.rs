@@ -438,4 +438,3 @@ mod tests {
         assert_eq!(RoseTokenFactory::lookup_ident(&("let".to_string())), TokenType::RW_LET);
     }
 }
-
