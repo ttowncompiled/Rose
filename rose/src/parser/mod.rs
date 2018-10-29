@@ -25,6 +25,7 @@ use lexer::RoseLexer;
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum Precedence {
     LOWEST,
+    ASSIGN,
     OR,
     AND,
     EQUALS,
@@ -89,6 +90,7 @@ impl<'a> RoseParser<'a> {
             TokenType::OP_DIV           => Precedence::PRODUCT,
             TokenType::OP_MOD           => Precedence::PRODUCT,
             TokenType::OP_POW           => Precedence::POW,
+            TokenType::OP_ASSIGN        => Precedence::ASSIGN,
             TokenType::DEL_LPAREN       => Precedence::CALL,
             _                           => Precedence::LOWEST,
         };
@@ -137,6 +139,7 @@ impl<'a> RoseParser<'a> {
             TokenType::OP_GTE           => true,
             TokenType::OP_LT            => true,
             TokenType::OP_LTE           => true,
+            TokenType::OP_ASSIGN        => true,
             _                           => false,
         };
     }
@@ -369,6 +372,26 @@ let x;
                     assert_eq!(Some("let".to_string()), (**stmt).token_literal(), "tests[{}]", i);
                     i += 1;
                 }
+            },
+            None => assert!(false, "parse_program() returns None"),
+        }
+    }
+
+    #[test]
+    fn test_expression_statement() {
+        let input: &str  = "
+x = 5;
+";
+        let count: usize = 1;
+        let mut parser: RoseParser = RoseParser::new(input, "test_expression_statement".to_string());
+        let program: Option<Program> = parser.parse_program();
+        check_parser_errors(&parser);
+        match program {
+            Some(prog) => {
+                if prog.statements.len() != count {
+                    assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
+                }
+                assert_eq!("(x = 5);".to_string(), (*prog.statements[0]).to_string(), "tests[{}]", 1);
             },
             None => assert!(false, "parse_program() returns None"),
         }
