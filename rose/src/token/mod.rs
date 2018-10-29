@@ -37,6 +37,7 @@ pub enum TokenType {
     LIT_FLOAT,
     LIT_BOOL,
     LIT_SYMBOL,
+    LIT_NIL,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -119,6 +120,7 @@ impl RoseTokenFactory {
             "or"        => TokenType::RW_OR,
             "true"      => TokenType::LIT_BOOL,
             "false"     => TokenType::LIT_BOOL,
+            "nil"       => TokenType::LIT_NIL,
             _           => TokenType::LIT_IDENT,
         };
     }
@@ -373,6 +375,7 @@ mod tests {
         test_factory_with(":x".to_string(), TokenType::LIT_SYMBOL);
         test_factory_with(":foo".to_string(), TokenType::LIT_SYMBOL);
         test_factory_with(":F_o_O_1_!".to_string(), TokenType::LIT_SYMBOL);
+        test_factory_with("nil".to_string(), TokenType::LIT_NIL);
     }
 
     fn test_factory_with(input: String, exp_ttype: TokenType) {
