@@ -9,7 +9,8 @@ pub struct Symbol {
 }
 
 impl Symbol {
-    pub fn new(token: Token, value: String) -> Symbol {
+    pub fn new(token: Token) -> Symbol {
+        let value: String = token.literal.clone();
         return Symbol{
             token:      token,
             value:      value,
@@ -38,10 +39,7 @@ mod test {
 
     #[test]
     fn test_to_string() {
-        let sym: Symbol = Symbol::new(
-            Token::new(TokenType::LIT_SYMBOL, ":foo".to_string(), 1, 1),
-            ":foo".to_string(),
-        );
+        let sym: Symbol = Symbol::new(Token::new(TokenType::LIT_SYMBOL, ":foo".to_string(), 1, 1));
         assert_eq!(":foo", sym.to_string());
     }
 }

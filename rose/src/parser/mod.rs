@@ -5,7 +5,14 @@ use ast::Statement;
 use ast::Expression;
 use ast::Program;
 use ast::literal::ident::Identifier;
+use ast::literal::blank::Blank;
 use ast::literal::integer::IntegerLiteral;
+use ast::literal::float::FloatLiteral;
+use ast::literal::boolean::BooleanLiteral;
+use ast::literal::inf::Inf;
+use ast::literal::nan::NaN;
+use ast::literal::nil::Nil;
+use ast::literal::symbol::Symbol;
 use ast::statement::binding::LetStatement;
 use ast::statement::expression::ExpressionStatement;
 use ast::statement::ret::ReturnStatement;
@@ -102,7 +109,14 @@ impl<'a> RoseParser<'a> {
             TokenType::OP_ADD               => self.parse_prefix_expression(),
             TokenType::OP_SUB               => self.parse_prefix_expression(),
             TokenType::LIT_IDENT            => self.parse_identifier(),
+            TokenType::LIT_BLANK            => self.parse_blank(),
             TokenType::LIT_INT              => self.parse_integer_literal(),
+            TokenType::LIT_FLOAT            => self.parse_float_literal(),
+            TokenType::LIT_BOOL             => self.parse_boolean_literal(),
+            TokenType::LIT_INF              => self.parse_inf(),
+            TokenType::LIT_NAN              => self.parse_nan(),
+            TokenType::LIT_NIL              => self.parse_nil(),
+            TokenType::LIT_SYMBOL           => self.parse_symbol(),
             _ => None,
         };
     }
@@ -222,6 +236,10 @@ impl<'a> RoseParser<'a> {
         return Some(Box::new(Identifier::new(self.curr_token.clone())));
     }
 
+    fn parse_blank(&mut self) -> Option<Box<dyn Expression>> {
+        return Some(Box::new(Blank::new(self.curr_token.clone())));
+    }
+
     fn parse_integer_literal(&mut self) -> Option<Box<dyn Expression>> {
         return match self.curr_token.literal.parse::<i32>() {
             Ok(val) => Some(Box::new(IntegerLiteral::new(self.curr_token.clone(), val))),
@@ -230,6 +248,36 @@ impl<'a> RoseParser<'a> {
                 None
             },
         };
+    }
+
+    fn parse_float_literal(&mut self) -> Option<Box<dyn Expression>> {
+        return match self.curr_token.literal.parse::<f64>() {
+            Ok(val) => Some(Box::new(FloatLiteral::new(self.curr_token.clone(), val))),
+            Err(err) => {
+                self.errors.push(err.to_string());
+                None
+            },
+        };
+    }
+
+    fn parse_boolean_literal(&mut self) -> Option<Box<dyn Expression>> {
+        return Some(Box::new(BooleanLiteral::new(self.curr_token.clone(), self.curr_token.literal == "true")));
+    }
+
+    fn parse_inf(&mut self) -> Option<Box<dyn Expression>> {
+        return Some(Box::new(Inf::new(self.curr_token.clone())));
+    }
+
+    fn parse_nan(&mut self) -> Option<Box<dyn Expression>> {
+        return Some(Box::new(NaN::new(self.curr_token.clone())));
+    }
+
+    fn parse_nil(&mut self) -> Option<Box<dyn Expression>> {
+        return Some(Box::new(Nil::new(self.curr_token.clone())));
+    }
+
+    fn parse_symbol(&mut self) -> Option<Box<dyn Expression>> {
+        return Some(Box::new(Symbol::new(self.curr_token.clone())));
     }
 
     fn peek_token_is(&self, ttype: &TokenType) -> bool {
@@ -362,6 +410,24 @@ return 838383;
     }
 
     #[test]
+    fn test_blank_expression() {
+        let input: &str = "_;";
+        let count: usize = 1;
+        let mut parser: RoseParser = RoseParser::new(input, "test_blank_expression".to_string());
+        let program: Option<Program> = parser.parse_program();
+        check_parser_errors(&parser);
+        match program {
+            Some(prog) => {
+                if prog.statements.len() != count {
+                    assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
+                }
+                assert_eq!(Some("_".to_string()), (*prog.statements[0]).token_literal(), "tests[{}]", 1);
+            },
+            None => assert!(false, "parse_program() returns None"),
+        }
+    }
+
+    #[test]
     fn test_integer_literal_expression() {
         let input = "5;";
         let count: usize = 1;
@@ -374,6 +440,117 @@ return 838383;
                     assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
                 }
                 assert_eq!(Some("5".to_string()), (*prog.statements[0]).token_literal(), "tests[{}]", 1);
+            },
+            None => assert!(false, "parse_program() returns None"),
+        }
+    }
+
+    #[test]
+    fn test_float_literal_expression() {
+        let input = "5.5;";
+        let count: usize = 1;
+        let mut parser: RoseParser = RoseParser::new(input, "test_float_literal_expression".to_string());
+        let program: Option<Program> = parser.parse_program();
+        check_parser_errors(&parser);
+        match program {
+            Some(prog) => {
+                if prog.statements.len() != count {
+                    assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
+                }
+                assert_eq!(Some("5.5".to_string()), (*prog.statements[0]).token_literal(), "tests[{}]", 1);
+            },
+            None => assert!(false, "parse_program() returns None"),
+        }
+    }
+
+    #[test]
+    fn test_boolean_literal_expression() {
+        let input = "
+true;
+false;";
+        let count: usize = 2;
+        let mut parser: RoseParser = RoseParser::new(input, "test_boolean_literal_expression".to_string());
+        let program: Option<Program> = parser.parse_program();
+        check_parser_errors(&parser);
+        match program {
+            Some(prog) => {
+                if prog.statements.len() != count {
+                    assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
+                }
+                assert_eq!(Some("true".to_string()), (*prog.statements[0]).token_literal(), "tests[{}]", 1);
+                assert_eq!(Some("false".to_string()), (*prog.statements[1]).token_literal(), "tests[{}]", 2);
+            },
+            None => assert!(false, "parse_program() returns None"),
+        }
+    }
+
+    #[test]
+    fn test_inf_expression() {
+        let input: &str = "Inf;";
+        let count: usize = 1;
+        let mut parser: RoseParser = RoseParser::new(input, "test_inf_expression".to_string());
+        let program: Option<Program> = parser.parse_program();
+        check_parser_errors(&parser);
+        match program {
+            Some(prog) => {
+                if prog.statements.len() != count {
+                    assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
+                }
+                assert_eq!(Some("Inf".to_string()), (*prog.statements[0]).token_literal(), "tests[{}]", 1);
+            },
+            None => assert!(false, "parse_program() returns None"),
+        }
+    }
+
+    #[test]
+    fn test_nan_expression() {
+        let input: &str = "NaN;";
+        let count: usize = 1;
+        let mut parser: RoseParser = RoseParser::new(input, "test_nan_expression".to_string());
+        let program: Option<Program> = parser.parse_program();
+        check_parser_errors(&parser);
+        match program {
+            Some(prog) => {
+                if prog.statements.len() != count {
+                    assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
+                }
+                assert_eq!(Some("NaN".to_string()), (*prog.statements[0]).token_literal(), "tests[{}]", 1);
+            },
+            None => assert!(false, "parse_program() returns None"),
+        }
+    }
+
+    #[test]
+    fn test_nil_expression() {
+        let input: &str = "nil;";
+        let count: usize = 1;
+        let mut parser: RoseParser = RoseParser::new(input, "test_nil_expression".to_string());
+        let program: Option<Program> = parser.parse_program();
+        check_parser_errors(&parser);
+        match program {
+            Some(prog) => {
+                if prog.statements.len() != count {
+                    assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
+                }
+                assert_eq!(Some("nil".to_string()), (*prog.statements[0]).token_literal(), "tests[{}]", 1);
+            },
+            None => assert!(false, "parse_program() returns None"),
+        }
+    }
+
+    #[test]
+    fn test_symbol_expression() {
+        let input: &str = ":foo;";
+        let count: usize = 1;
+        let mut parser: RoseParser = RoseParser::new(input, "test_symbol_expression".to_string());
+        let program: Option<Program> = parser.parse_program();
+        check_parser_errors(&parser);
+        match program {
+            Some(prog) => {
+                if prog.statements.len() != count {
+                    assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
+                }
+                assert_eq!(Some(":foo".to_string()), (*prog.statements[0]).token_literal(), "tests[{}]", 1);
             },
             None => assert!(false, "parse_program() returns None"),
         }
