@@ -3,13 +3,23 @@
 pub enum TokenType {
     META_ILLEGAL,
     META_EOF,
+    RW_AND,
     RW_LET,
+    RW_NOT,
+    RW_OR,
     OP_ADD,
     OP_SUB,
     OP_MUL,
     OP_DIV,
     OP_MOD,
     OP_POW,
+    OP_NOT,
+    OP_EQ,
+    OP_NEQ,
+    OP_GT,
+    OP_GTE,
+    OP_LT,
+    OP_LTE,
     OP_ASSIGN,
     DEL_END,
     DEL_COLON,
@@ -95,6 +105,9 @@ impl RoseTokenFactory {
             "let"       => TokenType::RW_LET,
             "true"      => TokenType::LIT_BOOL,
             "false"     => TokenType::LIT_BOOL,
+            "and"       => TokenType::RW_AND,
+            "or"        => TokenType::RW_OR,
+            "not"       => TokenType::RW_NOT,
             _           => TokenType::LIT_IDENT,
         };
     }
@@ -149,13 +162,68 @@ impl TokenFactory for RoseTokenFactory {
             },
             '/'     => token = TokenBuilder::new(TokenType::OP_DIV, '/'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '%'     => token = TokenBuilder::new(TokenType::OP_MOD, '%'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            '='     => token = TokenBuilder::new(TokenType::OP_ASSIGN, '='.to_string(), line_number, char_position).build(self.file_name.clone()),
+            '='     => {
+                match self.builder {
+                    Some(ref mut builder) => {
+                        if builder.ttype == TokenType::OP_EQ || builder.ttype == TokenType::OP_NEQ || builder.ttype == TokenType::OP_GTE || builder.ttype == TokenType::OP_LTE {
+                            builder.push(ch);
+                            token = builder.build(self.file_name.clone());
+                        } else {
+                            Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
+                        }
+                    },
+                    None => {
+                        if peek_ch == '=' {
+                            self.builder = Some(TokenBuilder::new(TokenType::OP_EQ, '='.to_string(), line_number, char_position));
+                            token = None;
+                        } else {
+                            token = TokenBuilder::new(TokenType::OP_ASSIGN, '='.to_string(), line_number, char_position).build(self.file_name.clone());
+                        }
+                    },
+                }
+            },
             '\n'    => token = TokenBuilder::new(TokenType::DEL_END, '\n'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '\r'    => token = TokenBuilder::new(TokenType::DEL_END, '\r'.to_string(), line_number, char_position).build(self.file_name.clone()),
             ';'     => token = TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '('     => token = TokenBuilder::new(TokenType::DEL_LPAREN, '('.to_string(), line_number, char_position).build(self.file_name.clone()),
             ')'     => token = TokenBuilder::new(TokenType::DEL_RPAREN, ')'.to_string(), line_number, char_position).build(self.file_name.clone()),
             ':'     => token = TokenBuilder::new(TokenType::DEL_COLON, ':'.to_string(), line_number, char_position).build(self.file_name.clone()),
+            '!'     => {
+                match self.builder {
+                    Some(ref mut builder) => {
+                        if builder.ttype == TokenType::LIT_IDENT {
+                            builder.push(ch);
+                            token = builder.build(self.file_name.clone());
+                        } else {
+                            Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
+                        }
+                    },
+                    None => {
+                        if peek_ch == '=' {
+                            self.builder = Some(TokenBuilder::new(TokenType::OP_NEQ, '!'.to_string(), line_number, char_position));
+                            token = None;
+                        } else {
+                            token = TokenBuilder::new(TokenType::OP_NOT, '!'.to_string(), line_number, char_position).build(self.file_name.clone());
+                        }
+                    },
+                }
+            },
+            '>'     => {
+                if peek_ch == '=' {
+                    self.builder = Some(TokenBuilder::new(TokenType::OP_GTE, '>'.to_string(), line_number, char_position));
+                    token = None;
+                } else {
+                    token = TokenBuilder::new(TokenType::OP_GT, '>'.to_string(), line_number, char_position).build(self.file_name.clone());
+                }
+            },
+            '<'     => {
+                if peek_ch == '=' {
+                    self.builder = Some(TokenBuilder::new(TokenType::OP_LTE, '<'.to_string(), line_number, char_position));
+                    token = None;
+                } else {
+                    token = TokenBuilder::new(TokenType::OP_LT, '<'.to_string(), line_number, char_position).build(self.file_name.clone());
+                }
+            },
             _       => {
                 match self.builder {
                     Some(ref mut builder) => {
@@ -245,13 +313,23 @@ mod tests {
     fn test_manufacture() {
         test_factory_with("\\".to_string(), TokenType::META_ILLEGAL);
         test_factory_with("\0".to_string(), TokenType::META_EOF);
+        test_factory_with("and".to_string(), TokenType::RW_AND);
         test_factory_with("let".to_string(), TokenType::RW_LET);
+        test_factory_with("not".to_string(), TokenType::RW_NOT);
+        test_factory_with("or".to_string(), TokenType::RW_OR);
         test_factory_with("+".to_string(), TokenType::OP_ADD);
         test_factory_with("-".to_string(), TokenType::OP_SUB);
         test_factory_with("*".to_string(), TokenType::OP_MUL);
         test_factory_with("/".to_string(), TokenType::OP_DIV);
         test_factory_with("%".to_string(), TokenType::OP_MOD);
         test_factory_with("**".to_string(), TokenType::OP_POW);
+        test_factory_with("!".to_string(), TokenType::OP_NOT);
+        test_factory_with("==".to_string(), TokenType::OP_EQ);
+        test_factory_with("!=".to_string(), TokenType::OP_NEQ);
+        test_factory_with(">".to_string(), TokenType::OP_GT);
+        test_factory_with(">=".to_string(), TokenType::OP_GTE);
+        test_factory_with("<".to_string(), TokenType::OP_LT);
+        test_factory_with("<=".to_string(), TokenType::OP_LTE);
         test_factory_with("=".to_string(), TokenType::OP_ASSIGN);
         test_factory_with("\n".to_string(), TokenType::DEL_END);
         test_factory_with("\r".to_string(), TokenType::DEL_END);
