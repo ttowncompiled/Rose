@@ -1,15 +1,17 @@
 use std::str::Chars;
 use std::iter::Peekable;
 use token::Token;
+use token::TokenType;
 use token::TokenFactory;
 use token::RoseTokenFactory;
 
 pub trait Lexer<'a> {
-    fn next_token(&mut self) -> Option<Token>;
+    fn next_token(&mut self) -> Token;
 }
 
 pub struct RoseLexer<'a> {
     input:              &'a str,
+    file_name:          String,
     chars:              Peekable<Chars<'a>>,
     line_number:        i64,
     char_position:      i64,
@@ -21,6 +23,7 @@ impl<'a> RoseLexer<'a> {
     pub fn new(input: &'a str, file_name: String) -> RoseLexer<'a> {
         let mut l = RoseLexer{
             input:              input,
+            file_name:          file_name.clone(),
             chars:              input.chars().peekable(),
             line_number:        1,
             char_position:      1,
@@ -57,16 +60,23 @@ impl<'a> RoseLexer<'a> {
 }
 
 impl<'a> Lexer<'a> for RoseLexer<'a> {
-    fn next_token(&mut self) -> Option<Token> {
-        self.skip_whitespace();
-        let peek_ch: char = self.peek_char();
-        let token: Option<Token> = self.token_factory.manufacture(self.ch, peek_ch, self.line_number, self.char_position);
-        if self.ch == '\n' || self.ch == '\r' {
-            self.line_number += 1;
-            self.char_position = 0;
+    fn next_token(&mut self) -> Token {
+        let mut token: Option<Token> = None;
+        while token.is_none() {
+            self.skip_whitespace();
+            let peek_ch: char = self.peek_char();
+            token = self.token_factory.manufacture(self.ch, peek_ch, self.line_number, self.char_position);
+            if self.ch == '\n' || self.ch == '\r' {
+                self.line_number += 1;
+                self.char_position = 0;
+            }
+            self.read_char();
         }
-        self.read_char();
-        return token;
+        if let Some(tok) = token {
+            return tok;
+        } else {
+            return Token::new(TokenType::META_EOF, '\0'.to_string(), self.line_number, self.char_position);
+        }
     }
 }
 

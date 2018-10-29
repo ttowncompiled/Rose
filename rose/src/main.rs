@@ -3,6 +3,7 @@ use std::io::{self, Read, Write};
 mod token;
 mod lexer;
 mod ast;
+mod parser;
 
 use token::*;
 use lexer::*;
@@ -23,15 +24,11 @@ fn main() -> io::Result<()> {
                 }
                 let mut lexer: RoseLexer = RoseLexer::new(&input, "REPL".to_string());
                 'inner: loop {
-                    match lexer.next_token() {
-                        Some(token) => {
-                            if token.ttype == TokenType::META_EOF {
-                                break 'inner;
-                            }
-                            println!("{:?}", token);
-                        },
-                        None => (),
+                    let token: Token = lexer.next_token();
+                    if token.ttype == TokenType::META_EOF {
+                        break 'inner;
                     }
+                    println!("{:?}", token);
                 }
             },
             Err(error) => return Err(error),
