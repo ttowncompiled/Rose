@@ -5,7 +5,9 @@ pub enum TokenType {
     META_EOF,
     RW_AND,
     RW_BEGIN,
+    RW_ELSE,
     RW_END,
+    RW_IF,
     RW_LET,
     RW_MUT,
     RW_NOT,
@@ -106,7 +108,9 @@ impl RoseTokenFactory {
         return match literal {
             "and"       => TokenType::RW_AND,
             "begin"     => TokenType::RW_BEGIN,
+            "else"      => TokenType::RW_ELSE,
             "end"       => TokenType::RW_END,
+            "if"        => TokenType::RW_IF,
             "let"       => TokenType::RW_LET,
             "mut"       => TokenType::RW_MUT,
             "not"       => TokenType::RW_NOT,
@@ -327,7 +331,9 @@ mod tests {
         test_factory_with("\0".to_string(), TokenType::META_EOF);
         test_factory_with("and".to_string(), TokenType::RW_AND);
         test_factory_with("begin".to_string(), TokenType::RW_BEGIN);
+        test_factory_with("else".to_string(), TokenType::RW_ELSE);
         test_factory_with("end".to_string(), TokenType::RW_END);
+        test_factory_with("if".to_string(), TokenType::RW_IF);
         test_factory_with("let".to_string(), TokenType::RW_LET);
         test_factory_with("mut".to_string(), TokenType::RW_MUT);
         test_factory_with("not".to_string(), TokenType::RW_NOT);
