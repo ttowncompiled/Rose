@@ -70,7 +70,7 @@ which can not be overloaded will be marked RW instead of KW.*
 | KW\_PUB       | pub           | Publicly available type or binding                |
 | KW\_PUTS      | puts          | A reserved macro for printing to std out with '\n'|
 | KW\_REF       | ref           | Keyword used for matching borrows and boxes       |
-| KW\_RETURN    | return        | Terminates block and returns right value          |
+| RW\_RETURN    | return        | Terminates block and returns right value          |
 | KW\_SAVE      | save          | A reserved macro for saving the current program   |
 | KW\_SELFVALUE | self          | Instance of the current context                   |
 | KW\_SELFTYPE  | Self          | Type of the current context                       |
