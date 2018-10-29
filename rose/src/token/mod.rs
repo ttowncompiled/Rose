@@ -36,17 +36,15 @@ pub enum TokenType {
 pub struct Token {
     pub ttype:          TokenType,
     pub literal:        String,
-    pub file_name:      String,
     pub line_number:    i64,
     pub char_position:  i64,
 }
 
 impl Token {
-    pub fn new(ttype: TokenType, literal: String, file_name: String, line_number: i64, char_position: i64) -> Token {
+    pub fn new(ttype: TokenType, literal: String, line_number: i64, char_position: i64) -> Token {
         return Token{
             ttype:          ttype,
             literal:        literal,
-            file_name:      file_name,
             line_number:    line_number,
             char_position:  char_position,
         };
@@ -75,9 +73,9 @@ impl TokenBuilder {
         self.literal.push(ch);
     }
 
-    pub fn build(&self, file_name: String) -> Option<Token> {
-        if self.literal != "" && file_name != "" && self.line_number > 0 && self.char_position > 0 {
-            return Some(Token::new(self.ttype.clone(), self.literal.clone(), file_name, self.line_number, self.char_position));
+    pub fn build(&self) -> Option<Token> {
+        if self.literal != "" && self.line_number > 0 && self.char_position > 0 {
+            return Some(Token::new(self.ttype.clone(), self.literal.clone(), self.line_number, self.char_position));
         }
         return None;
     }
@@ -137,15 +135,15 @@ impl TokenFactory for RoseTokenFactory {
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_position: i64) -> Option<Token> {
         let mut token: Option<Token> = None;
         match ch {
-            '\0'    => token = TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            '+'     => token = TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            '-'     => token = TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), line_number, char_position).build(self.file_name.clone()),
+            '\0'    => token = TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), line_number, char_position).build(),
+            '+'     => token = TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), line_number, char_position).build(),
+            '-'     => token = TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), line_number, char_position).build(),
             '*'     => {
                 match self.builder {
                     Some(ref mut builder) => {
                         if builder.ttype == TokenType::OP_POW {
                             builder.push(ch);
-                            token = builder.build(self.file_name.clone());
+                            token = builder.build();
                         } else {
                             Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
                         }
@@ -155,19 +153,19 @@ impl TokenFactory for RoseTokenFactory {
                             self.builder = Some(TokenBuilder::new(TokenType::OP_POW, '*'.to_string(), line_number, char_position));
                             token = None;
                         } else {
-                            token = TokenBuilder::new(TokenType::OP_MUL, '*'.to_string(), line_number, char_position).build(self.file_name.clone());
+                            token = TokenBuilder::new(TokenType::OP_MUL, '*'.to_string(), line_number, char_position).build();
                         }
                     },
                 }
             },
-            '/'     => token = TokenBuilder::new(TokenType::OP_DIV, '/'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            '%'     => token = TokenBuilder::new(TokenType::OP_MOD, '%'.to_string(), line_number, char_position).build(self.file_name.clone()),
+            '/'     => token = TokenBuilder::new(TokenType::OP_DIV, '/'.to_string(), line_number, char_position).build(),
+            '%'     => token = TokenBuilder::new(TokenType::OP_MOD, '%'.to_string(), line_number, char_position).build(),
             '='     => {
                 match self.builder {
                     Some(ref mut builder) => {
                         if builder.ttype == TokenType::OP_EQ || builder.ttype == TokenType::OP_NEQ || builder.ttype == TokenType::OP_GTE || builder.ttype == TokenType::OP_LTE {
                             builder.push(ch);
-                            token = builder.build(self.file_name.clone());
+                            token = builder.build();
                         } else {
                             Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
                         }
@@ -177,23 +175,23 @@ impl TokenFactory for RoseTokenFactory {
                             self.builder = Some(TokenBuilder::new(TokenType::OP_EQ, '='.to_string(), line_number, char_position));
                             token = None;
                         } else {
-                            token = TokenBuilder::new(TokenType::OP_ASSIGN, '='.to_string(), line_number, char_position).build(self.file_name.clone());
+                            token = TokenBuilder::new(TokenType::OP_ASSIGN, '='.to_string(), line_number, char_position).build();
                         }
                     },
                 }
             },
-            '\n'    => token = TokenBuilder::new(TokenType::DEL_END, '\n'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            '\r'    => token = TokenBuilder::new(TokenType::DEL_END, '\r'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            ';'     => token = TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            '('     => token = TokenBuilder::new(TokenType::DEL_LPAREN, '('.to_string(), line_number, char_position).build(self.file_name.clone()),
-            ')'     => token = TokenBuilder::new(TokenType::DEL_RPAREN, ')'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            ':'     => token = TokenBuilder::new(TokenType::DEL_COLON, ':'.to_string(), line_number, char_position).build(self.file_name.clone()),
+            '\n'    => token = TokenBuilder::new(TokenType::DEL_END, '\n'.to_string(), line_number, char_position).build(),
+            '\r'    => token = TokenBuilder::new(TokenType::DEL_END, '\r'.to_string(), line_number, char_position).build(),
+            ';'     => token = TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), line_number, char_position).build(),
+            '('     => token = TokenBuilder::new(TokenType::DEL_LPAREN, '('.to_string(), line_number, char_position).build(),
+            ')'     => token = TokenBuilder::new(TokenType::DEL_RPAREN, ')'.to_string(), line_number, char_position).build(),
+            ':'     => token = TokenBuilder::new(TokenType::DEL_COLON, ':'.to_string(), line_number, char_position).build(),
             '!'     => {
                 match self.builder {
                     Some(ref mut builder) => {
                         if builder.ttype == TokenType::LIT_IDENT {
                             builder.push(ch);
-                            token = builder.build(self.file_name.clone());
+                            token = builder.build();
                         } else {
                             Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
                         }
@@ -203,7 +201,7 @@ impl TokenFactory for RoseTokenFactory {
                             self.builder = Some(TokenBuilder::new(TokenType::OP_NEQ, '!'.to_string(), line_number, char_position));
                             token = None;
                         } else {
-                            token = TokenBuilder::new(TokenType::OP_NOT, '!'.to_string(), line_number, char_position).build(self.file_name.clone());
+                            token = TokenBuilder::new(TokenType::OP_NOT, '!'.to_string(), line_number, char_position).build();
                         }
                     },
                 }
@@ -213,7 +211,7 @@ impl TokenFactory for RoseTokenFactory {
                     self.builder = Some(TokenBuilder::new(TokenType::OP_GTE, '>'.to_string(), line_number, char_position));
                     token = None;
                 } else {
-                    token = TokenBuilder::new(TokenType::OP_GT, '>'.to_string(), line_number, char_position).build(self.file_name.clone());
+                    token = TokenBuilder::new(TokenType::OP_GT, '>'.to_string(), line_number, char_position).build();
                 }
             },
             '<'     => {
@@ -221,7 +219,7 @@ impl TokenFactory for RoseTokenFactory {
                     self.builder = Some(TokenBuilder::new(TokenType::OP_LTE, '<'.to_string(), line_number, char_position));
                     token = None;
                 } else {
-                    token = TokenBuilder::new(TokenType::OP_LT, '<'.to_string(), line_number, char_position).build(self.file_name.clone());
+                    token = TokenBuilder::new(TokenType::OP_LT, '<'.to_string(), line_number, char_position).build();
                 }
             },
             _       => {
@@ -230,11 +228,11 @@ impl TokenFactory for RoseTokenFactory {
                         if builder.ttype == TokenType::LIT_IDENT && (Self::is_letter(ch) || Self::is_digit(ch) || Self::is_special_char(ch) || ch == '_') {
                             builder.push(ch);
                             if Self::is_special_char(ch) {
-                                token = builder.build(self.file_name.clone());
+                                token = builder.build();
                             } else if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) || peek_ch == '_' {
                                 token = None;
                             } else {
-                                token = builder.build(self.file_name.clone());
+                                token = builder.build();
                             }
                         } else if builder.ttype == TokenType::LIT_INT && (Self::is_digit(ch) || ch == '.') {
                             builder.push(ch);
@@ -243,19 +241,19 @@ impl TokenFactory for RoseTokenFactory {
                                 if Self::is_digit(peek_ch) {
                                     token = None;
                                 } else {
-                                    token = builder.build(self.file_name.clone());
+                                    token = builder.build();
                                 }
                             } else if Self::is_digit(peek_ch) || peek_ch == '.' {
                                 token = None;
                             } else {
-                                token = builder.build(self.file_name.clone());
+                                token = builder.build();
                             }
                         } else if builder.ttype == TokenType::LIT_FLOAT && Self::is_digit(ch) {
                             builder.push(ch);
                             if Self::is_digit(peek_ch) {
                                 token = None;
                             } else {
-                                token = builder.build(self.file_name.clone());
+                                token = builder.build();
                             }
                         } else {
                             Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
@@ -267,24 +265,24 @@ impl TokenFactory for RoseTokenFactory {
                                 self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, '_'.to_string(), line_number, char_position));
                                 token = None;
                             } else {
-                                token = TokenBuilder::new(TokenType::LIT_BLANK, '_'.to_string(), line_number, char_position).build(self.file_name.clone());
+                                token = TokenBuilder::new(TokenType::LIT_BLANK, '_'.to_string(), line_number, char_position).build();
                             }
                         } else if Self::is_letter(ch) {
                             if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) || peek_ch == '_' {
                                 self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), line_number, char_position));
                                 token = None;
                             } else {
-                                token = TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), line_number, char_position).build(self.file_name.clone());
+                                token = TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), line_number, char_position).build();
                             }
                         } else if Self::is_digit(ch) {
                             if Self::is_digit(peek_ch) || peek_ch == '.' {
                                 self.builder = Some(TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), line_number, char_position));
                                 token = None
                             } else {
-                                token = TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), line_number, char_position).build(self.file_name.clone());
+                                token = TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), line_number, char_position).build();
                             }
                         } else {
-                            token = TokenBuilder::new(TokenType::META_ILLEGAL, ch.to_string(), line_number, char_position).build(self.file_name.clone());
+                            token = TokenBuilder::new(TokenType::META_ILLEGAL, ch.to_string(), line_number, char_position).build();
                         }
                     },
                 }
@@ -361,7 +359,7 @@ mod tests {
 
     fn test_token(factory: &mut RoseTokenFactory, input: String, ch: char, peek_ch: char, ln: i64, cp: i64, exp_ttype: Option<TokenType>) {
         let expected: Option<Token> = match exp_ttype {
-            Some(ttype) => Some(Token::new(ttype, input.clone(), input.clone(), 1, 1)),
+            Some(ttype) => Some(Token::new(ttype, input.clone(), 1, 1)),
             None => None,
         };
         let got: Option<Token> = factory.manufacture(ch, peek_ch, ln, cp);
