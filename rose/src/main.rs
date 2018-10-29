@@ -5,12 +5,11 @@ mod lexer;
 mod ast;
 mod parser;
 
-use token::*;
-use lexer::*;
+use parser::*;
 
 fn main() -> io::Result<()> {
     println!("Hello! Welcome to the Rose programming language!");
-    'outer: loop {
+    loop {
         print!(">> ");
         match io::stdout().flush() {
             Ok(_) => (),
@@ -22,13 +21,10 @@ fn main() -> io::Result<()> {
                 if input == "exit()\n" || input == "exit()\r" {
                     return Ok(());
                 }
-                let mut lexer: RoseLexer = RoseLexer::new(&input, "REPL".to_string());
-                'inner: loop {
-                    let token: Token = lexer.next_token();
-                    if token.ttype == TokenType::META_EOF {
-                        break 'inner;
-                    }
-                    println!("{:?}", token);
+                let mut parser: RoseParser = RoseParser::new(&input, "REPL".to_string());
+                match parser.parse_program() {
+                    Some(program) => println!("{}", program.to_string()),
+                    None => (),
                 }
             },
             Err(error) => return Err(error),
