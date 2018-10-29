@@ -26,7 +26,10 @@ impl ToString for PrefixExpression {
         builder.push('(');
         builder.push_str(&self.operator);
         match self.value {
-            Some(ref value) => builder.push_str(&(*value).to_string()),
+            Some(ref value) => {
+                builder.push(' ');
+                builder.push_str(&(*value).to_string());
+            },
             None => (),
         }
         builder.push(')');
@@ -54,6 +57,6 @@ mod tests {
             Token::new(TokenType::OP_ADD, "!".to_string(), 1, 1),
             Some(Box::new(Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 2))))
         );
-        assert_eq!("(!foo)", pe.to_string());
+        assert_eq!("(! foo)", pe.to_string());
     }
 }

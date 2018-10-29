@@ -191,6 +191,10 @@ impl<'a> RoseParser<'a> {
     fn parse_return_statement(&mut self) -> Option<Box<dyn Statement>> {
         let token: Token = self.curr_token.clone();
         self.next_token();
+        if self.peek_token_is(&TokenType::DEL_END) {
+            self.next_token();
+            return Some(Box::new(ReturnStatement::new(token, None)));
+        }
         let value: Option<Box<dyn Expression>> = self.parse_expression();
         if self.peek_token_is(&TokenType::DEL_END) {
             self.next_token();
@@ -342,11 +346,16 @@ mod tests {
     #[test]
     fn test_let_statement() {
         let input: &str = "
+let mut x: Int = 5;
+let x: Int = 5;
+let mut x = 5;
+let mut x: Int;
 let x = 5;
-let y = 10;
-let foobar = 838383;
+let mut x;
+let x: Int;
+let x;
 ";
-        let count: usize = 3;
+        let count: usize = 8;
         let mut parser: RoseParser = RoseParser::new(input, "test_let_statement".to_string());
         let program: Option<Program> = parser.parse_program();
         check_parser_errors(&parser);
@@ -369,10 +378,9 @@ let foobar = 838383;
     fn test_return_statement() {
         let input: &str  = "
 return 5;
-return 10;
-return 838383;
+return;
 ";
-        let count: usize = 3;
+        let count: usize = 2;
         let mut parser: RoseParser = RoseParser::new(input, "test_return_statement".to_string());
         let program: Option<Program> = parser.parse_program();
         check_parser_errors(&parser);
@@ -559,9 +567,11 @@ false;";
     #[test]
     fn test_parsing_prefix_expressions() {
         let input: &str = "
-!5;
--5";
-        let count: usize = 2;
+!false;
+-5
++5
+not true";
+        let count: usize = 4;
         let mut parser: RoseParser = RoseParser::new(input, "test_parsing_prefix_expression".to_string());
         let program: Option<Program> = parser.parse_program();
         check_parser_errors(&parser);
@@ -570,8 +580,10 @@ false;";
                 if prog.statements.len() != count {
                     assert!(false, "program.statements does not contain {} statements, got={}", count, prog.statements.len());
                 }
-                assert_eq!("(!5);".to_string(), (*prog.statements[0]).to_string(), "tests[{}]", 1);
-                assert_eq!("(-5);".to_string(), (*prog.statements[1]).to_string(), "tests[{}]", 2);
+                assert_eq!("(! false);".to_string(), (*prog.statements[0]).to_string(), "tests[{}]", 1);
+                assert_eq!("(- 5);".to_string(), (*prog.statements[1]).to_string(), "tests[{}]", 2);
+                assert_eq!("(+ 5);".to_string(), (*prog.statements[2]).to_string(), "tests[{}]", 3);
+                assert_eq!("(not true);".to_string(), (*prog.statements[3]).to_string(), "tests[{}]", 4);
             },
             None => assert!(false, "parse_program() returns None"),
         }
@@ -587,8 +599,14 @@ false;";
 5 > 5;
 5 < 5;
 5 == 5;
-5 != 5;";
-        let count: usize = 8;
+5 != 5;
+true and true;
+true or false;
+5 >= 5;
+5 <= 5;
+5 % 5;
+5 ** 5";
+        let count: usize = 14;
         let mut parser: RoseParser = RoseParser::new(input, "test_parsing_infix_expression".to_string());
         let program: Option<Program> = parser.parse_program();
         check_parser_errors(&parser);
@@ -605,6 +623,12 @@ false;";
                 assert_eq!("(5 < 5);".to_string(), (*prog.statements[5]).to_string(), "tests[{}]", 6);
                 assert_eq!("(5 == 5);".to_string(), (*prog.statements[6]).to_string(), "tests[{}]", 7);
                 assert_eq!("(5 != 5);".to_string(), (*prog.statements[7]).to_string(), "tests[{}]", 8);
+                assert_eq!("(true and true);".to_string(), (*prog.statements[8]).to_string(), "tests[{}]", 9);
+                assert_eq!("(true or false);".to_string(), (*prog.statements[9]).to_string(), "tests[{}]", 10);
+                assert_eq!("(5 >= 5);".to_string(), (*prog.statements[10]).to_string(), "tests[{}]", 11);
+                assert_eq!("(5 <= 5);".to_string(), (*prog.statements[11]).to_string(), "tests[{}]", 12);
+                assert_eq!("(5 % 5);".to_string(), (*prog.statements[12]).to_string(), "tests[{}]", 13);
+                assert_eq!("(5 ** 5);".to_string(), (*prog.statements[13]).to_string(), "tests[{}]", 14);
             },
             None => assert!(false, "parse_program() returns None"),
         }
