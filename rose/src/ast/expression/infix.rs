@@ -11,7 +11,8 @@ pub struct InfixExpression {
 }
 
 impl InfixExpression {
-    pub fn new(token: Token, left: Option<Box<dyn Expression>>, operator: String, right: Option<Box<dyn Expression>>) -> InfixExpression {
+    pub fn new(token: Token, left: Option<Box<dyn Expression>>, right: Option<Box<dyn Expression>>) -> InfixExpression {
+        let operator: String = token.literal.clone();
         return InfixExpression{
             token:          token,
             left:           left,
@@ -49,6 +50,8 @@ impl Node for InfixExpression {
     }
 }
 
+impl Expression for InfixExpression {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -58,16 +61,9 @@ mod tests {
     #[test]
     fn test_to_string() {
         let ie: InfixExpression = InfixExpression::new(
-            Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1),
-            Some(Box::new(Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1),
-                "foo".to_string()
-            ))),
-            "+".to_string(),
-            Some(Box::new(Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "bar".to_string(), 1, 7),
-                "bar".to_string()
-            )))
+            Token::new(TokenType::LIT_IDENT, "+".to_string(), 1, 5),
+            Some(Box::new(Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1)))),
+            Some(Box::new(Identifier::new(Token::new(TokenType::LIT_IDENT, "bar".to_string(), 1, 7))))
         );
         assert_eq!("(foo + bar)", ie.to_string());
     }

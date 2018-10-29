@@ -76,14 +76,8 @@ mod tests {
         let ls: LetStatement = LetStatement::new(
             Token::new(TokenType::RW_LET, "let".to_string(), 1, 1),
             Some(Token::new(TokenType::RW_MUT, "mut".to_string(), 1, 5)),
-            Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 9),
-                "foo".to_string()
-            ),
-            Some(Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "Int".to_string(), 1, 14),
-                "Int".to_string()
-            )),
+            Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 9)),
+            Some(Identifier::new(Token::new(TokenType::LIT_IDENT, "Int".to_string(), 1, 14))),
             Some(Box::new(IntegerLiteral::new(
                 Token::new(TokenType::LIT_INT, "5".to_string(), 1, 20),
                 5
@@ -93,14 +87,8 @@ mod tests {
         let ls: LetStatement = LetStatement::new(
             Token::new(TokenType::RW_LET, "let".to_string(), 1, 1),
             None,
-            Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 5),
-                "foo".to_string()
-            ),
-            Some(Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "Int".to_string(), 1, 10),
-                "Int".to_string()
-            )),
+            Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 5)),
+            Some(Identifier::new(Token::new(TokenType::LIT_IDENT, "Int".to_string(), 1, 10))),
             Some(Box::new(IntegerLiteral::new(
                 Token::new(TokenType::LIT_INT, "5".to_string(), 1, 16),
                 5
@@ -110,10 +98,7 @@ mod tests {
         let ls: LetStatement = LetStatement::new(
             Token::new(TokenType::RW_LET, "let".to_string(), 1, 1),
             None,
-            Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 5),
-                "foo".to_string()
-            ),
+            Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 5)),
             None,
             Some(Box::new(IntegerLiteral::new(
                 Token::new(TokenType::LIT_INT, "5".to_string(), 1, 11),
@@ -124,10 +109,7 @@ mod tests {
         let ls: LetStatement = LetStatement::new(
             Token::new(TokenType::RW_LET, "let".to_string(), 1, 1),
             None,
-            Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 5),
-                "foo".to_string()
-            ),
+            Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 5)),
             None,
             None
         );

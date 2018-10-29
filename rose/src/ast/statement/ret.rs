@@ -52,10 +52,7 @@ mod tests {
     fn test_to_string() {
         let rs = ReturnStatement::new(
             Token::new(TokenType::RW_RETURN, "return".to_string(), 1, 1),
-            Some(Box::new(Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 8),
-                "foo".to_string()
-            )))
+            Some(Box::new(Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 8))))
         );
         assert_eq!("return foo;", rs.to_string());
     }

@@ -10,7 +10,8 @@ pub struct PrefixExpression {
 }
 
 impl PrefixExpression {
-    pub fn new(token: Token, operator: String, value: Option<Box<dyn Expression>>) -> PrefixExpression {
+    pub fn new(token: Token, value: Option<Box<dyn Expression>>) -> PrefixExpression {
+        let operator: String = token.literal.clone();
         return PrefixExpression{
             token:          token,
             operator:       operator,
@@ -51,11 +52,7 @@ mod tests {
     fn test_to_string() {
         let pe: PrefixExpression = PrefixExpression::new(
             Token::new(TokenType::OP_ADD, "!".to_string(), 1, 1),
-            "!".to_string(),
-            Some(Box::new(Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 2),
-                "foo".to_string()
-            )))
+            Some(Box::new(Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 2))))
         );
         assert_eq!("(!foo)", pe.to_string());
     }

@@ -49,10 +49,7 @@ mod tests {
     fn test_to_string() {
         let es: ExpressionStatement = ExpressionStatement::new(
             Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1),
-            Some(Box::new(Identifier::new(
-                Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1),
-                "foo".to_string()
-            )))
+            Some(Box::new(Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1))))
         );
         assert_eq!("foo;", es.to_string());
     }

@@ -9,7 +9,8 @@ pub struct Identifier {
 }
 
 impl Identifier {
-    pub fn new(token: Token, value: String) -> Identifier {
+    pub fn new(token: Token) -> Identifier {
+        let value: String = token.literal.clone();
         return Identifier{
             token:      token,
             value:      value,
@@ -38,10 +39,7 @@ mod test {
 
     #[test]
     fn test_to_string() {
-        let ident: Identifier = Identifier::new(
-            Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1),
-            "foo".to_string(),
-        );
+        let ident: Identifier = Identifier::new(Token::new(TokenType::LIT_IDENT, "foo".to_string(), 1, 1));
         assert_eq!("foo", ident.to_string());
     }
 }
