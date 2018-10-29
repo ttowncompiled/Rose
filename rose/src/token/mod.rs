@@ -4,6 +4,8 @@ pub enum TokenType {
     META_ILLEGAL,
     META_EOF,
     RW_AND,
+    RW_BEGIN,
+    RW_END,
     RW_LET,
     RW_NOT,
     RW_OR,
@@ -30,6 +32,7 @@ pub enum TokenType {
     LIT_INT,
     LIT_FLOAT,
     LIT_BOOL,
+    LIT_SYMBOL,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -106,6 +109,8 @@ impl RoseTokenFactory {
             "and"       => TokenType::RW_AND,
             "or"        => TokenType::RW_OR,
             "not"       => TokenType::RW_NOT,
+            "begin"     => TokenType::RW_BEGIN,
+            "end"       => TokenType::RW_END,
             _           => TokenType::LIT_IDENT,
         };
     }
@@ -185,11 +190,18 @@ impl TokenFactory for RoseTokenFactory {
             ';'     => token = TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), line_number, char_position).build(),
             '('     => token = TokenBuilder::new(TokenType::DEL_LPAREN, '('.to_string(), line_number, char_position).build(),
             ')'     => token = TokenBuilder::new(TokenType::DEL_RPAREN, ')'.to_string(), line_number, char_position).build(),
-            ':'     => token = TokenBuilder::new(TokenType::DEL_COLON, ':'.to_string(), line_number, char_position).build(),
+            ':'     => {
+                if Self::is_letter(peek_ch) {
+                    self.builder = Some(TokenBuilder::new(TokenType::LIT_SYMBOL, ':'.to_string(), line_number, char_position));
+                    token = None;
+                } else {
+                    token = TokenBuilder::new(TokenType::DEL_COLON, ':'.to_string(), line_number, char_position).build();
+                }
+            },
             '!'     => {
                 match self.builder {
                     Some(ref mut builder) => {
-                        if builder.ttype == TokenType::LIT_IDENT {
+                        if builder.ttype == TokenType::LIT_IDENT || builder.ttype == TokenType::LIT_SYMBOL {
                             builder.push(ch);
                             token = builder.build();
                         } else {
@@ -225,7 +237,7 @@ impl TokenFactory for RoseTokenFactory {
             _       => {
                 match self.builder {
                     Some(ref mut builder) => {
-                        if builder.ttype == TokenType::LIT_IDENT && (Self::is_letter(ch) || Self::is_digit(ch) || Self::is_special_char(ch) || ch == '_') {
+                        if (builder.ttype == TokenType::LIT_IDENT || builder.ttype == TokenType::LIT_SYMBOL) && (Self::is_letter(ch) || Self::is_digit(ch) || Self::is_special_char(ch) || ch == '_') {
                             builder.push(ch);
                             if Self::is_special_char(ch) {
                                 token = builder.build();
@@ -312,6 +324,8 @@ mod tests {
         test_factory_with("\\".to_string(), TokenType::META_ILLEGAL);
         test_factory_with("\0".to_string(), TokenType::META_EOF);
         test_factory_with("and".to_string(), TokenType::RW_AND);
+        test_factory_with("begin".to_string(), TokenType::RW_BEGIN);
+        test_factory_with("end".to_string(), TokenType::RW_END);
         test_factory_with("let".to_string(), TokenType::RW_LET);
         test_factory_with("not".to_string(), TokenType::RW_NOT);
         test_factory_with("or".to_string(), TokenType::RW_OR);
@@ -344,6 +358,9 @@ mod tests {
         test_factory_with("5.5".to_string(), TokenType::LIT_FLOAT);
         test_factory_with("true".to_string(), TokenType::LIT_BOOL);
         test_factory_with("false".to_string(), TokenType::LIT_BOOL);
+        test_factory_with(":x".to_string(), TokenType::LIT_SYMBOL);
+        test_factory_with(":foo".to_string(), TokenType::LIT_SYMBOL);
+        test_factory_with(":F_o_O_1_!".to_string(), TokenType::LIT_SYMBOL);
     }
 
     fn test_factory_with(input: String, exp_ttype: TokenType) {
