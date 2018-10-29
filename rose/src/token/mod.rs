@@ -8,6 +8,7 @@ pub enum TokenType {
     RW_ELSE,
     RW_END,
     RW_IF,
+    RW_FN,
     RW_LET,
     RW_MUT,
     RW_NOT,
@@ -111,6 +112,7 @@ impl RoseTokenFactory {
             "else"      => TokenType::RW_ELSE,
             "end"       => TokenType::RW_END,
             "if"        => TokenType::RW_IF,
+            "fn"        => TokenType::RW_FN,
             "let"       => TokenType::RW_LET,
             "mut"       => TokenType::RW_MUT,
             "not"       => TokenType::RW_NOT,
@@ -334,6 +336,7 @@ mod tests {
         test_factory_with("else".to_string(), TokenType::RW_ELSE);
         test_factory_with("end".to_string(), TokenType::RW_END);
         test_factory_with("if".to_string(), TokenType::RW_IF);
+        test_factory_with("fn".to_string(), TokenType::RW_FN);
         test_factory_with("let".to_string(), TokenType::RW_LET);
         test_factory_with("mut".to_string(), TokenType::RW_MUT);
         test_factory_with("not".to_string(), TokenType::RW_NOT);
