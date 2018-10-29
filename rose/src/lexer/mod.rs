@@ -5,7 +5,6 @@ use token::TokenFactory;
 use token::RoseTokenFactory;
 
 pub trait Lexer<'a> {
-    fn new(input: &'a str, file_name: String) -> Self;
     fn next_token(&mut self) -> Option<Token>;
 }
 
@@ -18,8 +17,8 @@ pub struct RoseLexer<'a> {
     token_factory:      RoseTokenFactory,
 }
 
-impl<'a> Lexer<'a> for RoseLexer<'a> {
-    fn new(input: &'a str, file_name: String) -> RoseLexer<'a> {
+impl<'a> RoseLexer<'a> {
+    pub fn new(input: &'a str, file_name: String) -> RoseLexer<'a> {
         let mut l = RoseLexer{
             input:              input,
             chars:              input.chars().peekable(),
@@ -32,20 +31,6 @@ impl<'a> Lexer<'a> for RoseLexer<'a> {
         return l;
     }
 
-    fn next_token(&mut self) -> Option<Token> {
-        self.skip_whitespace();
-        let peek_ch: char = self.peek_char();
-        let token: Option<Token> = self.token_factory.manufacture(self.ch, peek_ch, self.line_number, self.char_position);
-        if self.ch == '\n' || self.ch == '\r' {
-            self.line_number += 1;
-            self.char_position = 0;
-        }
-        self.read_char();
-        return token;
-    }
-}
-
-impl<'a> RoseLexer<'a> {
     fn read_char(&mut self) {
         if self.ch == '\0' && self.peek_char() == '\0' {
             return;
@@ -68,6 +53,20 @@ impl<'a> RoseLexer<'a> {
         while RoseTokenFactory::is_whitespace(self.ch) {
             self.read_char();
         }
+    }
+}
+
+impl<'a> Lexer<'a> for RoseLexer<'a> {
+    fn next_token(&mut self) -> Option<Token> {
+        self.skip_whitespace();
+        let peek_ch: char = self.peek_char();
+        let token: Option<Token> = self.token_factory.manufacture(self.ch, peek_ch, self.line_number, self.char_position);
+        if self.ch == '\n' || self.ch == '\r' {
+            self.line_number += 1;
+            self.char_position = 0;
+        }
+        self.read_char();
+        return token;
     }
 }
 

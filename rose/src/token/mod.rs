@@ -72,7 +72,6 @@ impl TokenBuilder {
 }
 
 pub trait TokenFactory {
-    fn new(file_name: String) -> Self;
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_position: i64) -> Option<Token>;
 }
 
@@ -81,14 +80,43 @@ pub struct RoseTokenFactory {
     builder:            Option<TokenBuilder>,
 }
 
-impl TokenFactory for RoseTokenFactory {
-    fn new(file_name: String) -> Self {
+impl RoseTokenFactory {
+    pub fn new(file_name: String) -> Self {
         return RoseTokenFactory{
             file_name:      file_name,
             builder:        None,
         };
     }
 
+    fn lookup_ident(literal: &str) -> TokenType {
+        return match literal {
+            "let"   => TokenType::RW_LET,
+            _       => TokenType::LIT_IDENT,
+        };
+    }
+
+    fn is_letter(ch: char) -> bool {
+        return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_';
+    }
+
+    fn is_digit(ch: char) -> bool {
+        return '0' <= ch && ch <= '9';
+    }
+
+    fn is_special_char(ch: char) -> bool {
+        return ch == '!' || ch == '?';
+    }
+
+    pub fn is_whitespace(ch: char) -> bool {
+        return ch == ' ' || ch == '\t';
+    }
+
+    fn throw_manufacture_error(ch: char, file_name: String, line_number: i64, char_position: i64, builder: &TokenBuilder) {
+        panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, file_name, line_number, char_position, builder);
+    }
+}
+
+impl TokenFactory for RoseTokenFactory {
     fn manufacture(&mut self, ch: char, peek_ch: char, line_number: i64, char_position: i64) -> Option<Token> {
         let mut token: Option<Token> = None;
         match ch {
@@ -205,35 +233,6 @@ impl TokenFactory for RoseTokenFactory {
             None => (),
         }
         return token;
-    }
-}
-
-impl RoseTokenFactory {
-    fn throw_manufacture_error(ch: char, file_name: String, line_number: i64, char_position: i64, builder: &TokenBuilder) {
-        panic!("cannot process character {} at {}:{}:{}, building {:?}", ch, file_name, line_number, char_position, builder);
-    }
-
-    fn lookup_ident(literal: &str) -> TokenType {
-        return match literal {
-            "let"   => TokenType::RW_LET,
-            _       => TokenType::LIT_IDENT,
-        };
-    }
-
-    fn is_letter(ch: char) -> bool {
-        return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_';
-    }
-
-    fn is_digit(ch: char) -> bool {
-        return '0' <= ch && ch <= '9';
-    }
-
-    fn is_special_char(ch: char) -> bool {
-        return ch == '!' || ch == '?';
-    }
-
-    pub fn is_whitespace(ch: char) -> bool {
-        return ch == ' ' || ch == '\t';
     }
 }
 
