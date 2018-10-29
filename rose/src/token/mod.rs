@@ -19,6 +19,7 @@ pub enum TokenType {
     LIT_BLANK,
     LIT_INT,
     LIT_FLOAT,
+    LIT_BOOL,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -91,8 +92,10 @@ impl RoseTokenFactory {
 
     fn lookup_ident(literal: &str) -> TokenType {
         return match literal {
-            "let"   => TokenType::RW_LET,
-            _       => TokenType::LIT_IDENT,
+            "let"       => TokenType::RW_LET,
+            "true"      => TokenType::LIT_BOOL,
+            "false"     => TokenType::LIT_BOOL,
+            _           => TokenType::LIT_IDENT,
         };
     }
 
@@ -263,6 +266,8 @@ mod tests {
         test_factory_with("5".to_string(), TokenType::LIT_INT);
         test_factory_with("55".to_string(), TokenType::LIT_INT);
         test_factory_with("5.5".to_string(), TokenType::LIT_FLOAT);
+        test_factory_with("true".to_string(), TokenType::LIT_BOOL);
+        test_factory_with("false".to_string(), TokenType::LIT_BOOL);
     }
 
     fn test_factory_with(input: String, exp_ttype: TokenType) {
