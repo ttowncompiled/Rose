@@ -18,6 +18,7 @@ pub enum TokenType {
     LIT_IDENT,
     LIT_BLANK,
     LIT_INT,
+    LIT_FLOAT,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -156,22 +157,33 @@ impl TokenFactory for RoseTokenFactory {
                 match self.builder {
                     Some(ref mut builder) => {
                         if builder.ttype == TokenType::LIT_IDENT && (Self::is_letter(ch) || Self::is_digit(ch) || Self::is_special_char(ch) || ch == '_') {
+                            builder.push(ch);
                             if Self::is_special_char(ch) {
-                                builder.push(ch);
                                 token = builder.build(self.file_name.clone());
                             } else if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) || peek_ch == '_' {
-                                builder.push(ch);
                                 token = None;
                             } else {
-                                builder.push(ch);
                                 token = builder.build(self.file_name.clone());
                             }
-                        } else if builder.ttype == TokenType::LIT_INT && Self::is_digit(ch) {
-                            if Self::is_digit(peek_ch) {
-                                builder.push(ch);
+                        } else if builder.ttype == TokenType::LIT_INT && (Self::is_digit(ch) || ch == '.') {
+                            builder.push(ch);
+                            if ch == '.' {
+                                builder.ttype = TokenType::LIT_FLOAT;
+                                if Self::is_digit(peek_ch) {
+                                    token = None;
+                                } else {
+                                    token = builder.build(self.file_name.clone());
+                                }
+                            } else if Self::is_digit(peek_ch) || peek_ch == '.' {
                                 token = None;
                             } else {
-                                builder.push(ch);
+                                token = builder.build(self.file_name.clone());
+                            }
+                        } else if builder.ttype == TokenType::LIT_FLOAT && Self::is_digit(ch) {
+                            builder.push(ch);
+                            if Self::is_digit(peek_ch) {
+                                token = None;
+                            } else {
                                 token = builder.build(self.file_name.clone());
                             }
                         } else {
@@ -194,7 +206,7 @@ impl TokenFactory for RoseTokenFactory {
                                 token = TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), line_number, char_position).build(self.file_name.clone());
                             }
                         } else if Self::is_digit(ch) {
-                            if Self::is_digit(peek_ch) {
+                            if Self::is_digit(peek_ch) || peek_ch == '.' {
                                 self.builder = Some(TokenBuilder::new(TokenType::LIT_INT, ch.to_string(), line_number, char_position));
                                 token = None
                             } else {
@@ -250,6 +262,7 @@ mod tests {
         test_factory_with("_".to_string(), TokenType::LIT_BLANK);
         test_factory_with("5".to_string(), TokenType::LIT_INT);
         test_factory_with("55".to_string(), TokenType::LIT_INT);
+        test_factory_with("5.5".to_string(), TokenType::LIT_FLOAT);
     }
 
     fn test_factory_with(input: String, exp_ttype: TokenType) {
