@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 pub mod literal;
 pub mod statement;
+pub mod expression;
 
 pub trait Node: Debug + ToString {
     fn token_literal(&self) -> Option<String>;
