@@ -96,7 +96,7 @@ impl RoseTokenFactory {
     }
 
     fn is_letter(ch: char) -> bool {
-        return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_';
+        return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z';
     }
 
     fn is_digit(ch: char) -> bool {
@@ -149,40 +149,17 @@ impl TokenFactory for RoseTokenFactory {
             '\n'    => token = TokenBuilder::new(TokenType::DEL_END, '\n'.to_string(), line_number, char_position).build(self.file_name.clone()),
             '\r'    => token = TokenBuilder::new(TokenType::DEL_END, '\r'.to_string(), line_number, char_position).build(self.file_name.clone()),
             ';'     => token = TokenBuilder::new(TokenType::DEL_END, ';'.to_string(), line_number, char_position).build(self.file_name.clone()),
-            '_'     => {
-                match self.builder {
-                    Some(ref mut builder) => {
-                        if builder.ttype == TokenType::LIT_IDENT && (Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch)) {
-                            builder.push(ch);
-                            token = None;
-                        } else if builder.ttype == TokenType::LIT_IDENT {
-                            builder.push(ch);
-                            token = builder.build(self.file_name.clone());
-                        } else {
-                            Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
-                        }
-                    },
-                    None => {
-                        if Self::is_letter(peek_ch) {
-                            self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, '_'.to_string(), line_number, char_position));
-                            token = None;
-                        } else {
-                            token = TokenBuilder::new(TokenType::LIT_BLANK, '_'.to_string(), line_number, char_position).build(self.file_name.clone());
-                        }
-                    },
-                }
-            },
             '('     => token = TokenBuilder::new(TokenType::DEL_LPAREN, '('.to_string(), line_number, char_position).build(self.file_name.clone()),
             ')'     => token = TokenBuilder::new(TokenType::DEL_RPAREN, ')'.to_string(), line_number, char_position).build(self.file_name.clone()),
             ':'     => token = TokenBuilder::new(TokenType::DEL_COLON, ':'.to_string(), line_number, char_position).build(self.file_name.clone()),
             _       => {
                 match self.builder {
                     Some(ref mut builder) => {
-                        if builder.ttype == TokenType::LIT_IDENT && (Self::is_letter(ch) || Self::is_digit(ch) || Self::is_special_char(ch)) {
+                        if builder.ttype == TokenType::LIT_IDENT && (Self::is_letter(ch) || Self::is_digit(ch) || Self::is_special_char(ch) || ch == '_') {
                             if Self::is_special_char(ch) {
                                 builder.push(ch);
                                 token = builder.build(self.file_name.clone());
-                            } else if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) {
+                            } else if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) || peek_ch == '_' {
                                 builder.push(ch);
                                 token = None;
                             } else {
@@ -202,8 +179,15 @@ impl TokenFactory for RoseTokenFactory {
                         }
                     },
                     None => {
-                        if Self::is_letter(ch) {
-                            if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) {
+                        if ch == '_' {
+                            if Self::is_letter(peek_ch) {
+                                self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, '_'.to_string(), line_number, char_position));
+                                token = None;
+                            } else {
+                                token = TokenBuilder::new(TokenType::LIT_BLANK, '_'.to_string(), line_number, char_position).build(self.file_name.clone());
+                            }
+                        } else if Self::is_letter(ch) {
+                            if Self::is_letter(peek_ch) || Self::is_digit(peek_ch) || Self::is_special_char(peek_ch) || peek_ch == '_' {
                                 self.builder = Some(TokenBuilder::new(TokenType::LIT_IDENT, ch.to_string(), line_number, char_position));
                                 token = None;
                             } else {
