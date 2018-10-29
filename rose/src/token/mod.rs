@@ -131,6 +131,7 @@ impl RoseTokenFactory {
             "nil"       => TokenType::LIT_NIL,
             "Inf"       => TokenType::LIT_INF,
             "NaN"       => TokenType::LIT_NAN,
+            "_"         => TokenType::LIT_BLANK,
             _           => TokenType::LIT_IDENT,
         };
     }
@@ -435,6 +436,23 @@ mod tests {
 
     #[test]
     fn test_lookup_ident() {
+        assert_eq!(RoseTokenFactory::lookup_ident(&("and".to_string())), TokenType::RW_AND);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("do".to_string())), TokenType::RW_DO);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("else".to_string())), TokenType::RW_ELSE);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("end".to_string())), TokenType::RW_END);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("if".to_string())), TokenType::RW_IF);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("fn".to_string())), TokenType::RW_FN);
         assert_eq!(RoseTokenFactory::lookup_ident(&("let".to_string())), TokenType::RW_LET);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("mut".to_string())), TokenType::RW_MUT);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("not".to_string())), TokenType::RW_NOT);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("or".to_string())), TokenType::RW_OR);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("return".to_string())), TokenType::RW_RETURN);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("true".to_string())), TokenType::LIT_BOOL);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("false".to_string())), TokenType::LIT_BOOL);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("nil".to_string())), TokenType::LIT_NIL);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("Inf".to_string())), TokenType::LIT_INF);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("NaN".to_string())), TokenType::LIT_NAN);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("_".to_string())), TokenType::LIT_BLANK);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("foo".to_string())), TokenType::LIT_IDENT);
     }
 }
