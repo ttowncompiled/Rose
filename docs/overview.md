@@ -9,11 +9,11 @@ which can not be overloaded will be marked RW instead of KW.*
 | Lexer         | Keyword       | Description                                       |
 |---------------|---------------|---------------------------------------------------|
 | KW\_ABSTRACT  | abstract      | Declares an abstract type or routine definition   |
-| KW\_AND       | and           | Logical and, infix operator                       |
+| RW\_AND       | and           | Logical and, infix operator                       |
 | KW\_AS        | as            | Casts left type to right type, aliases imports    |
 | KW\_ASSERT    | assert        | A reserved macro for declaring assertions         |
 | KW\_AWAIT     | await         | Queues function call to the event queue           |
-| KW\_BEGIN     | begin         | Declares a basic block                            |
+| RW\_BEGIN     | begin         | Declares a basic block                            |
 | KW\_BLANK     | _             | A non-binding variable, catch-all match           |
 | KW\_BORROW    | borrow        | Allocates a stack-to-stack pointer                |
 | KW\_BREAK     | break         | Terminates execution of a block                   |
@@ -27,26 +27,26 @@ which can not be overloaded will be marked RW instead of KW.*
 | KW\_DEF       | def           | Defines a routine for the dispatcher              |
 | KW\_DEFER     | defer         | Defers execution to end of block                  |
 | KW\_DERIVE    | derive        | A reserved keyword for procedural macros          |
-| KW\_DO        | do            | Declares an isolated block                        |
+| RW\_DO        | do            | Declares an isolated block                        |
 | KW\_DROP      | drop          | Deallocates heap memory                           |
-| KW\_ELSE      | else          | Alternative branch                                |
-| KW\_END       | end           | Marks the end of a block                          |
+| RW\_ELSE      | else          | Alternative branch                                |
+| RW\_END       | end           | Marks the end of a block                          |
 | KW\_ENUM      | enum          | Enumerated type                                   |
 | KW\_EXIT      | exit          | A reserved macro for exiting the program          |
 | KW\_EXPECT    | expect        | A reserved macro for declaring expectations       |
 | KW\_EXT       | ext           | Declares ext relationship                         |
-| KW\_FALSE     | false         | The false Boolean literal                         |
+| RW\_FALSE     | false         | The false Boolean literal                         |
 | KW\_FINAL     | final         | Declares a final binding                          |
-| KW\_FN        | fn            | Anonymous closure definition                      |
+| RW\_FN        | fn            | Anonymous closure definition                      |
 | KW\_FOR       | for           | Loop for iterable collections                     |
 | KW\_GET       | get           | Defines a getter routine                          |
 | KW\_GETS      | gets          | A reserved macro for getting standard input       |
 | KW\_HAS       | has           | Declares has relationship                         |
-| KW\_IF        | if            | Primary branch                                    |
+| RW\_IF        | if            | Primary branch                                    |
 | KW\_IM        | im            | The imaginary type postfix unary operator         |
 | KW\_IMPL      | impl          | Declares an impl relationship                     |
 | KW\_IN        | in            | Binds left var to right collection, membership    |
-| KW\_INF       | Inf           | Infinity                                          |
+| RW\_INF       | Inf           | Infinity                                          |
 | KW\_IS        | is            | Strict equality check, infix operator             |
 | RW\_LET       | let           | Declares a variable binding                       |
 | KW\_LOOP      | loop          | Basic loop block, classic for-loop                |
@@ -54,13 +54,13 @@ which can not be overloaded will be marked RW instead of KW.*
 | KW\_MATCH     | match         | Pattern matching, switch expression               |
 | KW\_MOD       | mod           | Declares module, imports local module             |
 | KW\_MOVE      | move          | Moves binding to new owner                        |
-| KW\_MUT       | mut           | Mutable binding                                   |
-| KW\_NAN       | NaN           | Not a number, Inf/Inf                             |
+| RW\_MUT       | mut           | Mutable binding                                   |
+| RW\_NAN       | NaN           | Not a number, Inf/Inf                             |
 | KW\_NEW       | new           | Allocates heap memory and a stack-to-heap pointer |
-| KW\_NIL       | nil           | The nil or null type                              |
-| KW\_NOT       | not           | Logical not, prefix unary operator                |
+| RW\_NIL       | nil           | The nil or null type                              |
+| RW\_NOT       | not           | Logical not, prefix unary operator                |
 | KW\_OPEN      | open          | Claims an OS resource                             |
-| KW\_OR        | or            | Logical or, infix operator                        |
+| RW\_OR        | or            | Logical or, infix operator                        |
 | KW\_OVERLOAD  | overload      | Declares a routine overload for the dispatcher    |
 | KW\_OVERRIDE  | override      | Declares a routine override for the dispatcher    |
 | KW\_PANIC     | panic         | A reserved macro for throwing an err              |
@@ -80,7 +80,7 @@ which can not be overloaded will be marked RW instead of KW.*
 | KW\_SUPERVALUE| super         | Parent of the instance of the current context     |
 | KW\_SUPERTYPE | Super         | Type of the parent of the current context         |
 | KW\_TRAIT     | trait         | A stateless interface type                        |
-| KW\_TRUE      | true          | The true Boolean literal                          |
+| RW\_TRUE      | true          | The true Boolean literal                          |
 | KW\_TUPLE     | tuple         | Declares a tuple type                             |
 | KW\_TYPE      | type          | Declares a type alias                             |
 | KW\_TYPEOF    | typeof        | Casts a var to its symbolic type                  |
@@ -91,7 +91,6 @@ which can not be overloaded will be marked RW instead of KW.*
 | KW\_WHERE     | where         | Declare guard(s)                                  |
 | KW\_WHILE     | while         | While loop                                        |
 | KW\_WITH      | with          | Declares bindings for block                       |
-| KW\_XOR       | xor           | Logical xor, infix operator                       |
 | KW\_YIELD     | yield         | Return call for generators                        |
 
 # Operators
@@ -114,10 +113,10 @@ which can not be overloaded will be marked RW instead of KW.*
 | OP\_LTE           | <=            | Infix less-then-equal-to, boolean                 |
 | OP\_LSHIFT        | <<            | Bitwise left-logical-shift                        |
 | OP\_RSHIFT        | >>            | Bitwise right-logical-shift                       |
-| OP\_AND           | &&            | Bitwise logical-and                               |
-| OP\_OR            | \|\|          | Bitwise logical-or                                |
-| OP\_XOR           | ^             | Bitwise logical-xor                               |
-| OP\_LNOT          | ~             | Bitwise logical-not                               |
+| OP\_AND           | &&            | Bitwise AND                                       |
+| OP\_OR            | \|\|          | Bitwise OR                                        |
+| OP\_XOR           | ^             | Bitwise XOR                                       |
+| OP\_LNOT          | ~             | Bitwise NOT                                       |
 | OP\_ASSIGN        | =             | Assignment operator                               |
 | OP\_INF\_ASSIGN   | :=            | Assign and infer type from right type             |
 | OP\_ADD\_ASSIGN   | +=            | Adds left to right and assigns to left            |
@@ -156,7 +155,7 @@ which can not be overloaded will be marked RW instead of KW.*
 | DEL\_RPAREN       | )             | Closing paren for precedence, params, args, tuples|
 | DEL\_LBRACKET     | [             | Open bracket for precedence, basic collections    |
 | DEL\_RBRACKET     | ]             | Closing bracket for precedence, basic collections |
-| DEL\_LBRACE       | {             | Open brace for contexts, scopes, and structs       |
+| DEL\_LBRACE       | {             | Open brace for contexts, scopes, and structs      |
 | DEL\_RBRACE       | }             | Closing brace for contexts, scopes, and structs   |
 
 # Literals
