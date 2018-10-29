@@ -7,6 +7,7 @@ pub enum TokenType {
     RW_BEGIN,
     RW_END,
     RW_LET,
+    RW_MUT,
     RW_NOT,
     RW_OR,
     OP_ADD,
@@ -103,14 +104,15 @@ impl RoseTokenFactory {
 
     fn lookup_ident(literal: &str) -> TokenType {
         return match literal {
-            "let"       => TokenType::RW_LET,
-            "true"      => TokenType::LIT_BOOL,
-            "false"     => TokenType::LIT_BOOL,
             "and"       => TokenType::RW_AND,
-            "or"        => TokenType::RW_OR,
-            "not"       => TokenType::RW_NOT,
             "begin"     => TokenType::RW_BEGIN,
             "end"       => TokenType::RW_END,
+            "let"       => TokenType::RW_LET,
+            "mut"       => TokenType::RW_MUT,
+            "not"       => TokenType::RW_NOT,
+            "or"        => TokenType::RW_OR,
+            "true"      => TokenType::LIT_BOOL,
+            "false"     => TokenType::LIT_BOOL,
             _           => TokenType::LIT_IDENT,
         };
     }
@@ -327,6 +329,7 @@ mod tests {
         test_factory_with("begin".to_string(), TokenType::RW_BEGIN);
         test_factory_with("end".to_string(), TokenType::RW_END);
         test_factory_with("let".to_string(), TokenType::RW_LET);
+        test_factory_with("mut".to_string(), TokenType::RW_MUT);
         test_factory_with("not".to_string(), TokenType::RW_NOT);
         test_factory_with("or".to_string(), TokenType::RW_OR);
         test_factory_with("+".to_string(), TokenType::OP_ADD);
