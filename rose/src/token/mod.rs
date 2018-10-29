@@ -5,6 +5,7 @@ pub enum TokenType {
     META_EOF,
     RW_AND,
     RW_BEGIN,
+    RW_DO,
     RW_ELSE,
     RW_END,
     RW_IF,
@@ -27,7 +28,9 @@ pub enum TokenType {
     OP_LT,
     OP_LTE,
     OP_ASSIGN,
+    OP_MORPH,
     DEL_END,
+    DEL_COMMA,
     DEL_COLON,
     DEL_LPAREN,
     DEL_RPAREN,
@@ -110,6 +113,7 @@ impl RoseTokenFactory {
         return match literal {
             "and"       => TokenType::RW_AND,
             "begin"     => TokenType::RW_BEGIN,
+            "do"        => TokenType::RW_DO,
             "else"      => TokenType::RW_ELSE,
             "end"       => TokenType::RW_END,
             "if"        => TokenType::RW_IF,
@@ -152,7 +156,13 @@ impl TokenFactory for RoseTokenFactory {
         match ch {
             '\0'    => token = TokenBuilder::new(TokenType::META_EOF, '\0'.to_string(), line_number, char_position).build(),
             '+'     => token = TokenBuilder::new(TokenType::OP_ADD, '+'.to_string(), line_number, char_position).build(),
-            '-'     => token = TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), line_number, char_position).build(),
+            '-'     => {
+                if peek_ch == '>' {
+                    self.builder = Some(TokenBuilder::new(TokenType::OP_MORPH, '-'.to_string(), line_number, char_position));
+                } else {
+                    token = TokenBuilder::new(TokenType::OP_SUB, '-'.to_string(), line_number, char_position).build();
+                }
+            },
             '*'     => {
                 match self.builder {
                     Some(ref mut builder) => {
@@ -208,6 +218,7 @@ impl TokenFactory for RoseTokenFactory {
                     token = TokenBuilder::new(TokenType::DEL_COLON, ':'.to_string(), line_number, char_position).build();
                 }
             },
+            ','     => token = TokenBuilder::new(TokenType::DEL_COMMA, ','.to_string(), line_number, char_position).build(),
             '!'     => {
                 match self.builder {
                     Some(ref mut builder) => {
@@ -229,11 +240,23 @@ impl TokenFactory for RoseTokenFactory {
                 }
             },
             '>'     => {
-                if peek_ch == '=' {
-                    self.builder = Some(TokenBuilder::new(TokenType::OP_GTE, '>'.to_string(), line_number, char_position));
-                    token = None;
-                } else {
-                    token = TokenBuilder::new(TokenType::OP_GT, '>'.to_string(), line_number, char_position).build();
+                match self.builder {
+                    Some(ref mut builder) => {
+                        if builder.ttype == TokenType::OP_MORPH {
+                            builder.push(ch);
+                            token = builder.build();
+                        } else {
+                            Self::throw_manufacture_error(ch, self.file_name.clone(), line_number, char_position, builder);
+                        }
+                    },
+                    None => {
+                        if peek_ch == '=' {
+                            self.builder = Some(TokenBuilder::new(TokenType::OP_GTE, '>'.to_string(), line_number, char_position));
+                            token = None;
+                        } else {
+                            token = TokenBuilder::new(TokenType::OP_GT, '>'.to_string(), line_number, char_position).build();
+                        }
+                    },
                 }
             },
             '<'     => {
@@ -335,6 +358,7 @@ mod tests {
         test_factory_with("\0".to_string(), TokenType::META_EOF);
         test_factory_with("and".to_string(), TokenType::RW_AND);
         test_factory_with("begin".to_string(), TokenType::RW_BEGIN);
+        test_factory_with("do".to_string(), TokenType::RW_DO);
         test_factory_with("else".to_string(), TokenType::RW_ELSE);
         test_factory_with("end".to_string(), TokenType::RW_END);
         test_factory_with("if".to_string(), TokenType::RW_IF);
@@ -357,12 +381,14 @@ mod tests {
         test_factory_with("<".to_string(), TokenType::OP_LT);
         test_factory_with("<=".to_string(), TokenType::OP_LTE);
         test_factory_with("=".to_string(), TokenType::OP_ASSIGN);
+        test_factory_with("->".to_string(), TokenType::OP_MORPH);
         test_factory_with("\n".to_string(), TokenType::DEL_END);
         test_factory_with("\r".to_string(), TokenType::DEL_END);
         test_factory_with(";".to_string(), TokenType::DEL_END);
         test_factory_with("(".to_string(), TokenType::DEL_LPAREN);
         test_factory_with(")".to_string(), TokenType::DEL_RPAREN);
         test_factory_with(":".to_string(), TokenType::DEL_COLON);
+        test_factory_with(",".to_string(), TokenType::DEL_COMMA);
         test_factory_with("x".to_string(), TokenType::LIT_IDENT);
         test_factory_with("foo".to_string(), TokenType::LIT_IDENT);
         test_factory_with("_F_o_O_1_!".to_string(), TokenType::LIT_IDENT);
