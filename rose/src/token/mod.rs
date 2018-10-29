@@ -14,6 +14,7 @@ pub enum TokenType {
     RW_MUT,
     RW_NOT,
     RW_OR,
+    RW_RETURN,
     OP_ADD,
     OP_SUB,
     OP_MUL,
@@ -124,6 +125,7 @@ impl RoseTokenFactory {
             "mut"       => TokenType::RW_MUT,
             "not"       => TokenType::RW_NOT,
             "or"        => TokenType::RW_OR,
+            "return"    => TokenType::RW_RETURN,
             "true"      => TokenType::LIT_BOOL,
             "false"     => TokenType::LIT_BOOL,
             "nil"       => TokenType::LIT_NIL,
@@ -371,6 +373,7 @@ mod tests {
         test_factory_with("mut".to_string(), TokenType::RW_MUT);
         test_factory_with("not".to_string(), TokenType::RW_NOT);
         test_factory_with("or".to_string(), TokenType::RW_OR);
+        test_factory_with("return".to_string(), TokenType::RW_RETURN);
         test_factory_with("+".to_string(), TokenType::OP_ADD);
         test_factory_with("-".to_string(), TokenType::OP_SUB);
         test_factory_with("*".to_string(), TokenType::OP_MUL);
