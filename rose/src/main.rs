@@ -2,6 +2,7 @@ use std::io::{self, Read, Write};
 
 mod token;
 mod lexer;
+mod ast;
 
 use token::*;
 use lexer::*;

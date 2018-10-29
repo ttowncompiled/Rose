@@ -1,10 +1,15 @@
-pub trait Node: ToString {
+use std::fmt::Debug;
+
+pub mod literal;
+
+pub trait Node: Debug + ToString {
     fn token_literal(&self) -> Option<String>;
 }
 
 pub trait Statement: Node {}
 pub trait Expression: Node {}
 
+#[derive(Debug)]
 pub struct Program {
     pub statements:     Vec<Box<dyn Statement>>,
 }
@@ -36,4 +41,3 @@ impl Node for Program {
         }
     }
 }
-
