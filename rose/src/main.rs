@@ -8,9 +8,11 @@ mod object;
 mod evaluator;
 
 use parser::*;
+use evaluator::*;
 
 fn main() -> io::Result<()> {
     println!("Hello! Welcome to the Rose programming language!");
+    let eval: RoseEvaluator = RoseEvaluator::new();
     loop {
         print!(">> ");
         match io::stdout().flush() {
@@ -25,7 +27,12 @@ fn main() -> io::Result<()> {
                 }
                 let mut parser: RoseParser = RoseParser::new(&input, "REPL".to_string());
                 match parser.parse_program() {
-                    Some(program) => println!("{}", program.to_string()),
+                    Some(program) => {
+                        match eval.eval(Box::new(program)) {
+                            Some(obj) => println!("{}", obj.inspect()),
+                            None => (),
+                        }
+                    }
                     None => (),
                 }
             },
