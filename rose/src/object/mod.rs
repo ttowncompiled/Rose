@@ -44,7 +44,7 @@ impl Object for Blank {
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Integer {
-    value:      i32,
+    pub value:      i32,
 }
 
 impl Integer {
@@ -71,7 +71,7 @@ impl Object for Integer {
 
 #[derive(Debug, PartialEq, PartialOrd)]
 pub struct Float {
-    value:      f64,
+    pub value:      f64,
 }
 
 impl Float {
@@ -98,7 +98,7 @@ impl Object for Float {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Boolean {
-    value:      bool,
+    pub value:      bool,
 }
 
 impl Boolean {
@@ -194,7 +194,7 @@ impl Object for Nil {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Symbol {
-    value:      String,
+    pub value:      String,
 }
 
 impl Symbol {
