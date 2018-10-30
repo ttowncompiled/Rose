@@ -1,11 +1,34 @@
+use std::any::Any;
 use std::fmt::Debug;
 
 pub mod literal;
 pub mod statement;
 pub mod expression;
 
+#[allow(non_camel_case_types)]
+#[derive(Debug, PartialEq, Eq)]
+pub enum NodeType {
+    PROGRAM,
+    LET,
+    EXPRESSION,
+    RETURN,
+    BLANK,
+    BOOLEAN,
+    FLOAT,
+    IDENT,
+    INF,
+    INTEGER,
+    NAN,
+    NIL,
+    SYMBOL,
+    PREFIX,
+    INFIX,
+}
+
 pub trait Node: Debug + ToString {
+    fn node_type(&self) -> NodeType;
     fn token_literal(&self) -> Option<String>;
+    fn as_any(&self) -> &Any;
 }
 
 pub trait Statement: Node {}
@@ -35,11 +58,19 @@ impl ToString for Program {
 }
 
 impl Node for Program {
+    fn node_type(&self) -> NodeType {
+        return NodeType::PROGRAM;
+    }
+
     fn token_literal(&self) -> Option<String> {
         if self.statements.len() > 0 {
             return self.statements[0].token_literal();
         } else {
             return None;
         }
+    }
+
+    fn as_any(&self) -> &Any {
+        return self;
     }
 }

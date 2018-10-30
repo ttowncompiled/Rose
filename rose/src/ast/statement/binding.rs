@@ -1,5 +1,8 @@
+use std::any::Any;
+
 use token::Token;
 use ast::literal::ident::Identifier;
+use ast::NodeType;
 use ast::Node;
 use ast::Statement;
 use ast::Expression;
@@ -58,8 +61,16 @@ impl ToString for LetStatement {
 }
 
 impl Node for LetStatement {
+    fn node_type(&self) -> NodeType {
+        return NodeType::LET;
+    }
+
     fn token_literal(&self) -> Option<String> {
         return Some(self.token.literal.clone());
+    }
+
+    fn as_any(&self) -> &Any {
+        return self;
     }
 }
 

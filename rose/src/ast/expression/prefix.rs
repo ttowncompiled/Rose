@@ -1,4 +1,7 @@
+use std::any::Any;
+
 use token::Token;
+use ast::NodeType;
 use ast::Node;
 use ast::Expression;
 
@@ -38,8 +41,16 @@ impl ToString for PrefixExpression {
 }
 
 impl Node for PrefixExpression {
+    fn node_type(&self) -> NodeType {
+        return NodeType::PREFIX;
+    }
+
     fn token_literal(&self) -> Option<String> {
         return Some(self.token.literal.clone());
+    }
+
+    fn as_any(&self) -> &Any {
+        return self;
     }
 }
 

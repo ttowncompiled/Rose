@@ -1,3 +1,6 @@
+use std::any::Any;
+
+use ast::NodeType;
 use ast::Node;
 use ast::Expression;
 use token::Token;
@@ -25,8 +28,16 @@ impl ToString for Symbol {
 }
 
 impl Node for Symbol {
+    fn node_type(&self) -> NodeType {
+        return NodeType::SYMBOL;
+    }
+
     fn token_literal(&self) -> Option<String> {
         return Some(self.token.literal.clone());
+    }
+
+    fn as_any(&self) -> &Any {
+        return self;
     }
 }
 
