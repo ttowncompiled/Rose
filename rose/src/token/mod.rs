@@ -9,6 +9,7 @@ pub enum TokenType {
     RW_ELSE,
     RW_END,
     RW_IF,
+    RW_IS,
     RW_FN,
     RW_LET,
     RW_MUT,
@@ -120,6 +121,7 @@ impl RoseTokenFactory {
             "else"      => TokenType::RW_ELSE,
             "end"       => TokenType::RW_END,
             "if"        => TokenType::RW_IF,
+            "is"        => TokenType::RW_IS,
             "fn"        => TokenType::RW_FN,
             "let"       => TokenType::RW_LET,
             "mut"       => TokenType::RW_MUT,
@@ -369,6 +371,7 @@ mod tests {
         test_factory_with("else".to_string(), TokenType::RW_ELSE);
         test_factory_with("end".to_string(), TokenType::RW_END);
         test_factory_with("if".to_string(), TokenType::RW_IF);
+        test_factory_with("is".to_string(), TokenType::RW_IS);
         test_factory_with("fn".to_string(), TokenType::RW_FN);
         test_factory_with("let".to_string(), TokenType::RW_LET);
         test_factory_with("mut".to_string(), TokenType::RW_MUT);
@@ -441,6 +444,7 @@ mod tests {
         assert_eq!(RoseTokenFactory::lookup_ident(&("else".to_string())), TokenType::RW_ELSE);
         assert_eq!(RoseTokenFactory::lookup_ident(&("end".to_string())), TokenType::RW_END);
         assert_eq!(RoseTokenFactory::lookup_ident(&("if".to_string())), TokenType::RW_IF);
+        assert_eq!(RoseTokenFactory::lookup_ident(&("is".to_string())), TokenType::RW_IS);
         assert_eq!(RoseTokenFactory::lookup_ident(&("fn".to_string())), TokenType::RW_FN);
         assert_eq!(RoseTokenFactory::lookup_ident(&("let".to_string())), TokenType::RW_LET);
         assert_eq!(RoseTokenFactory::lookup_ident(&("mut".to_string())), TokenType::RW_MUT);

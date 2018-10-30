@@ -78,6 +78,7 @@ impl<'a> RoseParser<'a> {
         return match ttype {
             TokenType::RW_OR            => Precedence::OR,
             TokenType::RW_AND           => Precedence::AND,
+            TokenType::RW_IS            => Precedence::EQUALS,
             TokenType::OP_EQ            => Precedence::EQUALS,
             TokenType::OP_NEQ           => Precedence::EQUALS,
             TokenType::OP_GT            => Precedence::LESSGREATER,
@@ -127,6 +128,7 @@ impl<'a> RoseParser<'a> {
         return match ttype {
             TokenType::RW_OR            => true,
             TokenType::RW_AND           => true,
+            TokenType::RW_IS            => true,
             TokenType::OP_ADD           => true,
             TokenType::OP_SUB           => true,
             TokenType::OP_MUL           => true,
