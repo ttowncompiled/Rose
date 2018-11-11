@@ -5,6 +5,8 @@ pub enum TokenType {
 }
 
 pub struct Token {
-    pub ttype:      TokenType,
-    pub literal:    String,
+    pub ttype:          TokenType,
+    pub literal:        String,
+    pub line_num:       i32,
+    pub char_pos:       i32,
 }
