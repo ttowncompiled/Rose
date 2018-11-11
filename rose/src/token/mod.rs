@@ -1,6 +1,7 @@
 pub enum TokenType {
     MetaIllegal,
     MetaEOF,
+    OpAdd
 }
 
 pub struct Token {

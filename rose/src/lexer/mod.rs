@@ -28,9 +28,32 @@ impl<'a> Lexer<'a> {
     }
 
     pub fn next_token(&mut self) -> Token {
-        Token{
-            ttype: TokenType::MetaEOF,
-            literal: '\0'.to_string(),
+        self.skip_whitespace();
+        match self.ch {
+            '\0'    => {
+                let token = Token{
+                    ttype: TokenType::MetaEOF,
+                    literal: self.ch.to_string(),
+                };
+                self.read_char();
+                token
+            },
+            '+'     => {
+                let token = Token{
+                    ttype: TokenType::OpAdd,
+                    literal: self.ch.to_string(),
+                };
+                self.read_char();
+                token
+            },
+            _       => {
+                let token = Token{
+                    ttype: TokenType::MetaIllegal,
+                    literal: self.ch.to_string(),
+                };
+                self.read_char();
+                token
+            },
         }
     }
 
@@ -40,6 +63,12 @@ impl<'a> Lexer<'a> {
         match self.chars.next() {
             Some(ch) => self.ch3 = ch,
             None => self.ch3 = '\0',
+        }
+    }
+
+    fn skip_whitespace(&mut self) {
+        while self.ch == ' ' || self.ch == '\t' {
+            self.read_char();
         }
     }
 }
