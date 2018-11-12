@@ -1,10 +1,13 @@
 use std::fmt::Debug;
 
+use syntax::token::TokenType;
 use syntax::token::Token;
 use syntax::emitter::Emission;
 use syntax::emitter::Emitter;
 
 pub trait Node: Debug + ToString {
+    fn token(&self) -> &Token;
+    fn ttype(&self) -> &TokenType;
     fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>>;
 }
 
@@ -12,15 +15,15 @@ pub trait Expression: Node {}
 
 #[derive(Debug)]
 pub struct PrefixExpression {
-    pub token:      Token,
-    pub right:      Option<Box<dyn Expression>>,
+    op:         Token,
+    right:      Option<Box<dyn Expression>>,
 }
 
 impl ToString for PrefixExpression {
     fn to_string(&self) -> String {
         let mut buffer = String::new();
         buffer.push('(');
-        buffer.push_str(&self.token.literal);
+        buffer.push_str(&self.op.literal);
         match self.right {
             Some(ref exp) => {
                 buffer.push(' ');
@@ -34,10 +37,18 @@ impl ToString for PrefixExpression {
 }
 
 impl Node for PrefixExpression {
+    fn token(&self) -> &Token {
+        &self.op
+    }
+
+    fn ttype(&self) -> &TokenType {
+        &self.op.ttype
+    }
+
     fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>> {
         match self.right {
             Some(ref right_exp) => match right_exp.emit_with(emitter) {
-                Some(ref right) => emitter.emit_prefix(&self.token.ttype, right),
+                Some(ref right) => emitter.emit_prefix(&self.op.ttype, right),
                 None => None,
             }
             None => None,
@@ -49,8 +60,8 @@ impl Expression for PrefixExpression {}
 
 #[derive(Debug)]
 pub struct IntegerLiteral {
-    pub token: Token,
-    pub value: i32,
+    token:  Token,
+    value:  i32,
 }
 
 impl ToString for IntegerLiteral {
@@ -60,6 +71,14 @@ impl ToString for IntegerLiteral {
 }
 
 impl Node for IntegerLiteral {
+    fn token(&self) -> &Token {
+        &self.token
+    }
+
+    fn ttype(&self) -> &TokenType {
+        &self.token.ttype
+    }
+
     fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>> {
         emitter.emit_i32(self.value)
     }
@@ -69,9 +88,9 @@ impl Expression for IntegerLiteral {}
 
 #[derive(Debug)]
 pub struct InfixExpression {
-    pub left:       Option<Box<dyn Expression>>,
-    pub token:      Token,
-    pub right:      Option<Box<dyn Expression>>,
+    left:   Option<Box<dyn Expression>>,
+    op:     Token,
+    right:  Option<Box<dyn Expression>>,
 }
 
 impl ToString for InfixExpression {
@@ -85,7 +104,7 @@ impl ToString for InfixExpression {
             }
             None => (),
         }
-        buffer.push_str(&self.token.literal);
+        buffer.push_str(&self.op.literal);
         match self.right {
             Some(ref exp) => {
                 buffer.push(' ');
@@ -99,12 +118,20 @@ impl ToString for InfixExpression {
 }
 
 impl Node for InfixExpression {
+    fn token(&self) -> &Token {
+        &self.op
+    }
+
+    fn ttype(&self) -> &TokenType {
+        &self.op.ttype
+    }
+
     fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>> {
         match (&self.left, &self.right) {
             (Some(ref left_exp), Some(ref right_exp)) => {
                 match (left_exp.emit_with(emitter), right_exp.emit_with(emitter)) {
                     (Some(ref left), Some(ref right)) => emitter.emit_infix(left,
-                        &self.token.ttype,
+                        &self.op.ttype,
                         right),
                     (_, _) => None,
                 }
@@ -133,7 +160,7 @@ mod tests {
             value: 5,
         }.to_string(), "5");
         assert_eq!(PrefixExpression{
-            token: Token{
+            op: Token{
                 ttype: TokenType::OpAdd,
                 literal: '+'.to_string(),
                 line_num: 1,
@@ -159,7 +186,7 @@ mod tests {
                 },
                 value: 5,
             })),
-            token: Token{
+            op: Token{
                 ttype: TokenType::OpAdd,
                 literal: '+'.to_string(),
                 line_num: 1,
