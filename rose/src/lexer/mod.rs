@@ -5,25 +5,23 @@ use token::TokenType;
 use token::Token;
 
 pub struct Lexer<'a> {
-    input:      &'a str,
     chars:      Peekable<Chars<'a>>,
     ch:         char,
     ch2:        char,
     ch3:        char,
     line_num:   i32,
-    char_pos:   i32,
+    col_num:    i32,
 }
 
 impl<'a> Lexer<'a> {
     pub fn new(input: &'a str) -> Lexer {
         let mut l = Lexer{
-            input:      input,
             chars:      input.chars().peekable(),
             ch:         '\0',
             ch2:        '\0',
             ch3:        '\0',
             line_num:   1,
-            char_pos:   1,
+            col_num:    1,
         };
         l.read_char();
         l.read_char();
@@ -60,9 +58,9 @@ impl<'a> Lexer<'a> {
     fn update_read_pos(&mut self) {
         if self.ch == '\n' || self.ch == '\r' {
             self.line_num += 1;
-            self.char_pos = 0;
+            self.col_num = 0;
         }
-        self.char_pos += 1;
+        self.col_num += 1;
     }
 
     fn skip_whitespace(&mut self) {
@@ -76,13 +74,13 @@ impl<'a> Lexer<'a> {
             ttype:      ttype,
             literal:    self.ch.to_string(),
             line_num:   self.line_num,
-            char_pos:   self.char_pos,
+            col_num:    self.col_num,
         }
     }
 
     fn num_token(&mut self) -> Token {
         let line_num = self.line_num;
-        let char_pos = self.char_pos;
+        let col_num = self.col_num;
         let mut buffer = String::new();
         buffer.push(self.ch);
         while self.peeking_digit() {
@@ -93,7 +91,7 @@ impl<'a> Lexer<'a> {
             ttype:      TokenType::LitInt,
             literal:    buffer,
             line_num:   line_num,
-            char_pos:   char_pos,
+            col_num:   col_num,
         }
     }
 
@@ -124,7 +122,7 @@ mod tests {
             ttype: ttype,
             literal: test.clone(),
             line_num: 1,
-            char_pos: 1,
+            col_num: 1,
         };
         assert_eq!(lexer.next_token(), token);
     }
