@@ -5,7 +5,7 @@ use syntax::emitter::Emission;
 use syntax::emitter::Emitter;
 
 pub trait Node: Debug + ToString {
-    fn emit_with(&self, emit: &Emitter) -> Option<Box<dyn Emission>>;
+    fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>>;
 }
 
 pub trait Expression: Node {}
@@ -34,9 +34,12 @@ impl ToString for PrefixExpression {
 }
 
 impl Node for PrefixExpression {
-    fn emit_with(&self, emit: &Emitter) -> Option<Box<dyn Emission>> {
+    fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>> {
         match self.right {
-            Some(ref right) => emit.emit_prefix(&self.token.ttype, right),
+            Some(ref rightExp) => match rightExp.emit_with(emitter) {
+                Some(ref right) => emitter.emit_prefix(&self.token.ttype, right),
+                None => None,
+            }
             None => None,
         }
     }
@@ -56,8 +59,8 @@ impl ToString for IntegerLiteral {
 }
 
 impl Node for IntegerLiteral {
-    fn emit_with(&self, emit: &Emitter) -> Option<Box<dyn Emission>> {
-        emit.emit_i32(self.value)
+    fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>> {
+        emitter.emit_i32(self.value)
     }
 }
 
@@ -95,9 +98,16 @@ impl ToString for InfixExpression {
 }
 
 impl Node for InfixExpression {
-    fn emit_with(&self, emit: &Emitter) -> Option<Box<dyn Emission>> {
+    fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>> {
         match (&self.left, &self.right) {
-            (Some(ref left), Some(ref right)) => emit.emit_infix(left, &self.token.ttype, right),
+            (Some(ref leftExp), Some(ref rightExp)) => {
+                match (leftExp.emit_with(emitter), rightExp.emit_with(emitter)) {
+                    (Some(ref left), Some(ref right)) => emitter.emit_infix(left,
+                        &self.token.ttype,
+                        right),
+                    (_, _) => None,
+                }
+            },
             (_, _) => None,
         }
     }
