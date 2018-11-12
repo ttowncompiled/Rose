@@ -33,23 +33,15 @@ impl<'a> Lexer<'a> {
 
     pub fn next_token(&mut self) -> Token {
         self.skip_whitespace();
+        let token: Token;
         match self.ch {
-            '\0'    => {
-                let token = self.basic_token(TokenType::MetaEOF);
-                self.read_char();
-                token
-            },
-            '+'     => {
-                let token = self.basic_token(TokenType::OpAdd);
-                self.read_char();
-                token
-            },
-            _       => {
-                let token = self.basic_token(TokenType::MetaIllegal);
-                self.read_char();
-                token
-            },
+            '\0' => token = self.basic_token(TokenType::MetaEOF),
+            '+' => token = self.basic_token(TokenType::OpAdd),
+            '0' ... '9' => token = self.num_token(),
+            _  => token = self.basic_token(TokenType::MetaIllegal),
         }
+        self.read_char();
+        token
     }
 
     fn read_char(&mut self) {
@@ -90,5 +82,19 @@ impl<'a> Lexer<'a> {
             line_num:   self.line_num,
             char_pos:   self.char_pos,
         }
+    }
+
+    fn num_token(&mut self) -> Token {
+        let mut buffer = String::new();
+        buffer.push(self.ch);
+        while self.peeking_digit() {
+            self.read_char();
+            buffer.push(self.ch);
+        }
+        self.lit_token(TokenType::LitInt, buffer)
+    }
+
+    fn peeking_digit(&self) -> bool {
+        '0' <= self.ch2 && self.ch2 <= '9'
     }
 }
