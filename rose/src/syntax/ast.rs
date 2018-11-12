@@ -36,7 +36,7 @@ impl ToString for PrefixExpression {
 impl Node for PrefixExpression {
     fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>> {
         match self.right {
-            Some(ref rightExp) => match rightExp.emit_with(emitter) {
+            Some(ref right_exp) => match right_exp.emit_with(emitter) {
                 Some(ref right) => emitter.emit_prefix(&self.token.ttype, right),
                 None => None,
             }
@@ -49,6 +49,7 @@ impl Expression for PrefixExpression {}
 
 #[derive(Debug)]
 pub struct IntegerLiteral {
+    pub token: Token,
     pub value: i32,
 }
 
@@ -68,8 +69,8 @@ impl Expression for IntegerLiteral {}
 
 #[derive(Debug)]
 pub struct InfixExpression {
-    pub token:      Token,
     pub left:       Option<Box<dyn Expression>>,
+    pub token:      Token,
     pub right:      Option<Box<dyn Expression>>,
 }
 
@@ -100,8 +101,8 @@ impl ToString for InfixExpression {
 impl Node for InfixExpression {
     fn emit_with(&self, emitter: &Emitter) -> Option<Box<dyn Emission>> {
         match (&self.left, &self.right) {
-            (Some(ref leftExp), Some(ref rightExp)) => {
-                match (leftExp.emit_with(emitter), rightExp.emit_with(emitter)) {
+            (Some(ref left_exp), Some(ref right_exp)) => {
+                match (left_exp.emit_with(emitter), right_exp.emit_with(emitter)) {
                     (Some(ref left), Some(ref right)) => emitter.emit_infix(left,
                         &self.token.ttype,
                         right),
@@ -114,3 +115,65 @@ impl Node for InfixExpression {
 }
 
 impl Expression for InfixExpression {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use syntax::token::TokenType;
+
+    #[test]
+    fn test_to_string_impls() {
+        assert_eq!(IntegerLiteral{
+            token: Token{
+                ttype: TokenType::LitInt,
+                literal: "5".to_string(),
+                line_num: 1,
+                col_num: 1,
+            },
+            value: 5,
+        }.to_string(), "5");
+        assert_eq!(PrefixExpression{
+            token: Token{
+                ttype: TokenType::OpAdd,
+                literal: '+'.to_string(),
+                line_num: 1,
+                col_num: 1,
+            },
+            right: Some(Box::new(IntegerLiteral{
+                token: Token{
+                    ttype: TokenType::LitInt,
+                    literal: "5".to_string(),
+                    line_num: 1,
+                    col_num: 2,
+                },
+                value: 5,
+            })),
+        }.to_string(), "(+ 5)");
+        assert_eq!(InfixExpression{
+            left: Some(Box::new(IntegerLiteral{
+                token: Token{
+                    ttype: TokenType::LitInt,
+                    literal: "5".to_string(),
+                    line_num: 1,
+                    col_num: 1,
+                },
+                value: 5,
+            })),
+            token: Token{
+                ttype: TokenType::OpAdd,
+                literal: '+'.to_string(),
+                line_num: 1,
+                col_num: 3,
+            },
+            right: Some(Box::new(IntegerLiteral{
+                token: Token{
+                    ttype: TokenType::LitInt,
+                    literal: "10".to_string(),
+                    line_num: 1,
+                    col_num: 5,
+                },
+                value: 10,
+            }))
+        }.to_string(), "(5 + 10)");
+    }
+}
