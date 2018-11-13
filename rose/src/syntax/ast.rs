@@ -1,9 +1,7 @@
 use std::fmt::Debug;
 
-use syntax::token::TokenType;
-use syntax::token::Token;
-use syntax::emitter::Emission;
-use syntax::emitter::Emitter;
+use syntax::token::*;
+use syntax::emitter::*;
 
 pub trait Node: Debug + ToString {
     fn token(&self) -> &Token;
@@ -15,8 +13,8 @@ pub trait Expression: Node {}
 
 #[derive(Debug)]
 pub struct PrefixExpression {
-    op:         Token,
-    right:      Option<Box<dyn Expression>>,
+    pub op:         Token,
+    pub right:      Option<Box<dyn Expression>>,
 }
 
 impl ToString for PrefixExpression {
@@ -60,8 +58,8 @@ impl Expression for PrefixExpression {}
 
 #[derive(Debug)]
 pub struct IntegerLiteral {
-    token:  Token,
-    value:  i32,
+    pub token:  Token,
+    pub value:  i32,
 }
 
 impl ToString for IntegerLiteral {
@@ -88,9 +86,9 @@ impl Expression for IntegerLiteral {}
 
 #[derive(Debug)]
 pub struct InfixExpression {
-    left:   Option<Box<dyn Expression>>,
-    op:     Token,
-    right:  Option<Box<dyn Expression>>,
+    pub left:   Option<Box<dyn Expression>>,
+    pub op:     Token,
+    pub right:  Option<Box<dyn Expression>>,
 }
 
 impl ToString for InfixExpression {

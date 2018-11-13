@@ -1,8 +1,7 @@
 use std::str::Chars;
 use std::iter::Peekable;
 
-use syntax::token::TokenType;
-use syntax::token::Token;
+use syntax::token::*;
 
 pub struct Lexer<'a> {
     chars:      Peekable<Chars<'a>>,
