@@ -105,21 +105,21 @@ mod tests {
 
     #[test]
     fn text_next_token() {
-        test_with_input('\0'.to_string(), TokenType::MetaEOF);
-        test_with_input('\\'.to_string(), TokenType::MetaIllegal);
-        test_with_input('+'.to_string(), TokenType::OpAdd);
-        test_with_input("5".to_string(), TokenType::LitInt);
-        test_with_input("55".to_string(), TokenType::LitInt);
-        test_with_input('\n'.to_string(), TokenType::DelEnd);
-        test_with_input('\r'.to_string(), TokenType::DelEnd);
-        test_with_input(';'.to_string(), TokenType::DelEnd);
+        test_with_input("\0", TokenType::MetaEOF);
+        test_with_input("\\", TokenType::MetaIllegal);
+        test_with_input("+", TokenType::OpAdd);
+        test_with_input("5", TokenType::LitInt);
+        test_with_input("55", TokenType::LitInt);
+        test_with_input("\n", TokenType::DelEnd);
+        test_with_input("\r", TokenType::DelEnd);
+        test_with_input(";", TokenType::DelEnd);
     }
 
-    fn test_with_input(test: String, ttype: TokenType) {
+    fn test_with_input<'a>(test: &'a str, ttype: TokenType) {
         let mut lexer = Lexer::new(&test);
         let token = Token{
             ttype: ttype,
-            literal: test.clone(),
+            literal: test.to_string(),
             line_num: 1,
             col_num: 1,
         };
