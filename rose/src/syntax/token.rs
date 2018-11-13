@@ -2,8 +2,19 @@
 pub enum TokenType {
     MetaIllegal,
     MetaEOF,
+    RwPub,
+    RwClass,
+    RwDef,
+    RwEnd,
+    KwAs,
     OpAdd,
+    OpDeref,
     LitInt,
+    LitIdent,
+    DelLParen,
+    DelRParen,
+    DelColon,
+    DelComma,
     DelEnd,
 }
 

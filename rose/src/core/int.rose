@@ -1,0 +1,9 @@
+pub class Int32
+    pub def new(num: Int32) : Self
+        num^ as Int32
+    end
+
+    pub def add(self: Self, num: Self) : Self
+        self^ + num^
+    end
+end
