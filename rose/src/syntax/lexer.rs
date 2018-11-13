@@ -95,7 +95,7 @@ impl<'a> Lexer<'a> {
     }
 
     fn peeking_digit(&self) -> bool {
-        '0' <= self.ch2 && self.ch2 <= '9'
+        '0' <= self.ch2 && self.ch2 <= '9' || self.ch2 == '_'
     }
 }
 
@@ -110,6 +110,7 @@ mod tests {
         test_with_input("+", TokenType::OpAdd);
         test_with_input("5", TokenType::LitInt);
         test_with_input("55", TokenType::LitInt);
+        test_with_input("1_000_000", TokenType::LitInt);
         test_with_input("\n", TokenType::DelEnd);
         test_with_input("\r", TokenType::DelEnd);
         test_with_input(";", TokenType::DelEnd);
