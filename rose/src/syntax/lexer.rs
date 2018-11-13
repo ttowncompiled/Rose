@@ -30,14 +30,19 @@ impl<'a> Lexer<'a> {
 
     pub fn next_token(&mut self) -> Token {
         self.skip_whitespace();
-        let token: Token;
-        match self.ch {
-            '\0' => token = self.single_ch_token(TokenType::MetaEOF),
-            '+' => token = self.single_ch_token(TokenType::OpAdd),
-            '\n' | '\r' | ';' => token = self.single_ch_token(TokenType::DelEnd),
-            '0' ... '9' => token = self.num_token(),
-            _  => token = self.single_ch_token(TokenType::MetaIllegal),
-        }
+        let token = match self.ch {
+            '\0' => self.single_ch_token(TokenType::MetaEOF),
+            '+' => self.single_ch_token(TokenType::OpAdd),
+            '^' => self.single_ch_token(TokenType::OpDeref),
+            '(' => self.single_ch_token(TokenType::DelOpenParen),
+            ')' => self.single_ch_token(TokenType::DelCloseParen),
+            ':' => self.single_ch_token(TokenType::DelColon),
+            ',' => self.single_ch_token(TokenType::DelComma),
+            '\n' | '\r' | ';' => self.single_ch_token(TokenType::DelEnd),
+            '0' ... '9' => self.num_token(),
+            '_' | 'a' ... 'z' | 'A' ... 'Z' => self.ident_token(),
+            _  => self.single_ch_token(TokenType::MetaIllegal),
+        };
         self.read_char();
         token
     }
@@ -94,8 +99,49 @@ impl<'a> Lexer<'a> {
         }
     }
 
+    fn ident_token(&mut self) -> Token {
+        let line_num = self.line_num;
+        let col_num = self.col_num;
+        let mut buffer = String::new();
+        buffer.push(self.ch);
+        while self.peeking_letter() || self.peeking_digit() {
+            self.read_char();
+            buffer.push(self.ch);
+        }
+        if self.peeking_special_char() {
+            self.read_char();
+            buffer.push(self.ch);
+        }
+        Token{
+            ttype:      self.lookup_ident(&buffer),
+            raw:        buffer,
+            line_num:   line_num,
+            col_num:    col_num,
+        }
+    }
+
+    fn lookup_ident(&self, raw: &str) -> TokenType {
+        match raw {
+            "class" => TokenType::RwClass,
+            "def" => TokenType::RwDef,
+            "end" => TokenType::RwEnd,
+            "pub" => TokenType::RwPub,
+            "as" => TokenType::KwAs,
+            _ => TokenType::LitIdent,
+        }
+    }
+
     fn peeking_digit(&self) -> bool {
         '0' <= self.ch2 && self.ch2 <= '9' || self.ch2 == '_'
+    }
+
+    fn peeking_letter(&self) -> bool {
+        self.ch2 == '_' || ('a' <= self.ch2 && self.ch2 <= 'z')
+            || ('A' <= self.ch2 && self.ch2 <= 'Z')
+    }
+
+    fn peeking_special_char(&self) -> bool {
+        self.ch2 == '!' || self.ch2 == '?'
     }
 }
 
@@ -105,12 +151,28 @@ mod tests {
 
     #[test]
     fn text_next_token() {
-        test_with_input("\0", TokenType::MetaEOF);
         test_with_input("\\", TokenType::MetaIllegal);
+        test_with_input("\0", TokenType::MetaEOF);
+        test_with_input("class", TokenType::RwClass);
+        test_with_input("def", TokenType::RwDef);
+        test_with_input("end", TokenType::RwEnd);
+        test_with_input("pub", TokenType::RwPub);
+        test_with_input("as", TokenType::KwAs);
         test_with_input("+", TokenType::OpAdd);
+        test_with_input("^", TokenType::OpDeref);
         test_with_input("5", TokenType::LitInt);
         test_with_input("55", TokenType::LitInt);
         test_with_input("1_000_000", TokenType::LitInt);
+        test_with_input("_x", TokenType::LitIdent);
+        test_with_input("foo", TokenType::LitIdent);
+        test_with_input("Foo123", TokenType::LitIdent);
+        test_with_input("_F_o_1_a_2", TokenType::LitIdent);
+        test_with_input("foo!", TokenType::LitIdent);
+        test_with_input("foo?", TokenType::LitIdent);
+        test_with_input("(", TokenType::DelOpenParen);
+        test_with_input(")", TokenType::DelCloseParen);
+        test_with_input(":", TokenType::DelColon);
+        test_with_input(",", TokenType::DelComma);
         test_with_input("\n", TokenType::DelEnd);
         test_with_input("\r", TokenType::DelEnd);
         test_with_input(";", TokenType::DelEnd);
