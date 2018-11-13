@@ -21,7 +21,7 @@ impl ToString for PrefixExpression {
     fn to_string(&self) -> String {
         let mut buffer = String::new();
         buffer.push('(');
-        buffer.push_str(&self.op.literal);
+        buffer.push_str(&self.op.raw);
         match self.right {
             Some(ref exp) => {
                 buffer.push(' ');
@@ -102,7 +102,7 @@ impl ToString for InfixExpression {
             }
             None => (),
         }
-        buffer.push_str(&self.op.literal);
+        buffer.push_str(&self.op.raw);
         match self.right {
             Some(ref exp) => {
                 buffer.push(' ');
@@ -150,26 +150,26 @@ mod tests {
     fn test_to_string_impls() {
         assert_eq!(IntegerLiteral{
             token: Token{
-                ttype: TokenType::LitInt,
-                literal: "5".to_string(),
-                line_num: 1,
-                col_num: 1,
+                ttype:      TokenType::LitInt,
+                raw:        "5".to_string(),
+                line_num:   1,
+                col_num:    1,
             },
             value: 5,
         }.to_string(), "5");
         assert_eq!(PrefixExpression{
             op: Token{
-                ttype: TokenType::OpAdd,
-                literal: '+'.to_string(),
-                line_num: 1,
-                col_num: 1,
+                ttype:      TokenType::OpAdd,
+                raw:        '+'.to_string(),
+                line_num:   1,
+                col_num:    1,
             },
             right: Some(Box::new(IntegerLiteral{
                 token: Token{
-                    ttype: TokenType::LitInt,
-                    literal: "5".to_string(),
-                    line_num: 1,
-                    col_num: 2,
+                    ttype:      TokenType::LitInt,
+                    raw:        "5".to_string(),
+                    line_num:   1,
+                    col_num:    2,
                 },
                 value: 5,
             })),
@@ -177,25 +177,25 @@ mod tests {
         assert_eq!(InfixExpression{
             left: Some(Box::new(IntegerLiteral{
                 token: Token{
-                    ttype: TokenType::LitInt,
-                    literal: "5".to_string(),
-                    line_num: 1,
-                    col_num: 1,
+                    ttype:      TokenType::LitInt,
+                    raw:        "5".to_string(),
+                    line_num:   1,
+                    col_num:    1,
                 },
                 value: 5,
             })),
             op: Token{
-                ttype: TokenType::OpAdd,
-                literal: '+'.to_string(),
-                line_num: 1,
-                col_num: 3,
+                ttype:      TokenType::OpAdd,
+                raw:        '+'.to_string(),
+                line_num:   1,
+                col_num:    3,
             },
             right: Some(Box::new(IntegerLiteral{
                 token: Token{
-                    ttype: TokenType::LitInt,
-                    literal: "10".to_string(),
-                    line_num: 1,
-                    col_num: 5,
+                    ttype:      TokenType::LitInt,
+                    raw:        "10".to_string(),
+                    line_num:   1,
+                    col_num:    5,
                 },
                 value: 10,
             }))

@@ -67,7 +67,7 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_integer_literal(&mut self) -> Option<Box<dyn Expression>> {
-        match self.curr_token.literal.parse::<i32>() {
+        match self.curr_token.raw.parse::<i32>() {
             Ok(val) => Some(Box::new(IntegerLiteral{
                 token: self.curr_token.clone(),
                 value: val,

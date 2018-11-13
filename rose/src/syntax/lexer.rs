@@ -71,7 +71,7 @@ impl<'a> Lexer<'a> {
     fn single_ch_token(&self, ttype: TokenType) -> Token {
         Token{
             ttype:      ttype,
-            literal:    self.ch.to_string(),
+            raw:        self.ch.to_string(),
             line_num:   self.line_num,
             col_num:    self.col_num,
         }
@@ -88,9 +88,9 @@ impl<'a> Lexer<'a> {
         }
         Token{
             ttype:      TokenType::LitInt,
-            literal:    buffer,
+            raw:        buffer,
             line_num:   line_num,
-            col_num:   col_num,
+            col_num:    col_num,
         }
     }
 
@@ -118,10 +118,10 @@ mod tests {
     fn test_with_input<'a>(test: &'a str, ttype: TokenType) {
         let mut lexer = Lexer::new(&test);
         let token = Token{
-            ttype: ttype,
-            literal: test.to_string(),
-            line_num: 1,
-            col_num: 1,
+            ttype:      ttype,
+            raw:        test.to_string(),
+            line_num:   1,
+            col_num:    1,
         };
         assert_eq!(lexer.next_token(), token);
     }
